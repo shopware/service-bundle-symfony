@@ -4,7 +4,7 @@ namespace Shopware\ServiceBundle\Feature;
 
 class ShopOperation
 {
-    public function __construct(public ?string $fromVersion = null, public ?string $toVersion)
+    public function __construct(public ?string $fromVersion = null, public ?string $toVersion = null)
     {
     }
     
@@ -15,7 +15,7 @@ class ShopOperation
 
     public static function update(string $fromVersion, string $toVersion)
     {
-        return new self($fromVersio, $toVersion);
+        return new self($fromVersion, $toVersion);
     }
 
     public static function uninstall()
