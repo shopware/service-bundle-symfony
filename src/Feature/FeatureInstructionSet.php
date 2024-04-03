@@ -118,8 +118,6 @@ class FeatureInstructionSet
         }
 
         return $this->toPatch($groupedInstructions);
-
-        return $patch;
     }
 
     private function toPatch(array $groupedInstructions): array
