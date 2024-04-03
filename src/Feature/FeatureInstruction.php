@@ -12,7 +12,6 @@ readonly class FeatureInstruction
         public FeatureInstructionType $type,
         public string $minimumShopwareVersion,
         public ?Feature $feature = null,
-        public array $conditions = []
     ) {}
 
     public static function removal(string $name, string $minimumShopwareVersion): self
@@ -22,27 +21,20 @@ readonly class FeatureInstruction
 
     public function match(ShopOperation $shop): bool
     {
+        //uninstall case
         if ($shop->toVersion === null) {
             return false;
         }
-        
-        if ($shop->fromVersion === null) {
-            //it's a new shop so we always match
-            return true;
-        }
 
+        //updating, but from a version where this feature is already installed
+        //eg this feature is for 6.6. But the update is for 6.7 -> 6.8
         if ($shop->fromVersion && version_compare($shop->fromVersion, $this->minimumShopwareVersion, '>')) {
             return false;
         }
 
+        //updating or installing, but to a version less than this requirement
         if (version_compare($shop->toVersion, $this->minimumShopwareVersion, '<')) {
             return false;
-        }
-
-        foreach ($this->conditions as $condition) {
-            if (!$condition->match($shop)) {
-                return false;
-            }
         }
 
         return true;
