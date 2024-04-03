@@ -25,7 +25,8 @@
         "symfony/routing": "^6.2 || ^6.3 || ^6.4 || ^7.0",
         "doctrine/orm": "^2.11",
         "shopware/app-bundle": "^2.0",
-        "symfony/messenger": "^7.0"
+        "symfony/messenger": "^7.0",
+        "symfony/finder": "*"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.16",

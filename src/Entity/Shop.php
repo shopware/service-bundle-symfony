@@ -11,4 +11,7 @@ class Shop extends AbstractShop
 {
     #[Column(type: 'string')]
     public string $shopVersion;
+
+    #[Column(type: 'string')]
+    public ?string $manifestHash = null;
 }

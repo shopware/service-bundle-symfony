@@ -8,6 +8,7 @@ use Shopware\App\SDK\Shop\ShopInterface;
 use Shopware\App\SDK\Shop\ShopRepositoryInterface;
 use Shopware\ServiceBundle\Entity\Shop;
 use Shopware\ServiceBundle\Feature\FeatureInstructionSet;
+use Shopware\ServiceBundle\Manifest\ManifestSelector;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -31,7 +32,8 @@ final class ShopwareServiceExtension extends Extension
             ->setFactory([FeatureInstructionSet::class, 'fromArray'])
             ->setArguments([$config['features']]);
 
-//        $container->getDefinition(ShopInterface::class)
-//            ->replaceArgument(0, Shop::class);
+        $container->getDefinition(ManifestSelector::class)
+            ->replaceArgument(0, $config['manifest_directory']);
+
     }
 }

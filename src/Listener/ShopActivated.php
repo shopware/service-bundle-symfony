@@ -2,6 +2,7 @@
 
 namespace Shopware\ServiceBundle\Listener;
 
+use Psr\Log\LoggerInterface;
 use Shopware\App\SDK\Event\ShopActivatedEvent;
 use Shopware\ServiceBundle\Entity\Shop;
 use Shopware\ServiceBundle\Message\InstallShopConfig;

@@ -20,6 +20,9 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('manifest_directory')
+                    ->defaultValue('%kernel.project_dir%/manifest')
+                ->end()
                 ->arrayNode('features')
                     ->arrayPrototype()
                         ->children()
