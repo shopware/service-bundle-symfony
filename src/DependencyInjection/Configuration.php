@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopware\ServiceBundle\DependencyInjection;
 
-use Shopware\AppBundle\Entity\AbstractShop;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -28,8 +27,15 @@ final class Configuration implements ConfigurationInterface
                             ->arrayNode('config')
                                 ->children()
                                     ->scalarNode('url')->end()
+                                    ->scalarNode('source')->end()
                                     ->scalarNode('name')->end()
+                                    ->scalarNode('parent')->end()
+                                    ->integerNode('position')->end()
                                     ->scalarNode('event')->end()
+                                    ->arrayNode('label')
+                                        ->useAttributeAsKey('name')
+                                        ->prototype('scalar')->end()
+                                    ->end()
                                     ->arrayNode('permissions')
                                         ->scalarPrototype()->end()
                                     ->end()

@@ -7,25 +7,22 @@ namespace Shopware\ServiceBundle\Feature\Features;
 use Shopware\ServiceBundle\Feature\Feature;
 use Shopware\ServiceBundle\Feature\FeatureInstructionType;
 
-class Webhook implements Feature
+class MainModule implements Feature
 {
     public const INSTALL_REQUIRED_FIELDS = [
-        'url',
-        'name',
-        'event'
+        'source',
     ];
 
-    public function __construct(public ?string $url = null, public ?string $name = null, public ?string $event = null)
+    public function __construct(public string $source)
     {
     }
 
+    /**
+     * @param array{source?: string} $array
+     */
     public static function fromArray(array $array): self
     {
-        return new self(
-            $array['url'] ?? null,
-            $array['name'] ?? null,
-            $array['event'] ?? null
-        );
+        return new self((string) $array['source']);
     }
 
     public function validate(FeatureInstructionType $type): bool
@@ -41,13 +38,13 @@ class Webhook implements Feature
         return true;
     }
 
-
+    /**
+     * @return array{source: string}
+     */
     public function getConfig(): array
     {
         return array_filter([
-            'url' => $this->url,
-            'name' => $this->name,
-            'event' => $this->event
+            'source' => $this->source,
         ]);
     }
 }
