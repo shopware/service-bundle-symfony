@@ -6,5 +6,11 @@
         <defaults autowire="true" autoconfigure="true"/>
 
         <prototype namespace="Shopware\ServiceBundle\" resource="../../" exclude="../src/{DependencyInjection,Entity}"/>
+
+        <service id="Shopware\ServiceBundle\Manifest\Manifest" autowire="false">
+        </service>
+        <service id="Shopware\ServiceBundle\Manifest\ManifestSelector">
+            <argument></argument>
+        </service>
     </services>
 </container>
