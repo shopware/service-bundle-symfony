@@ -1,17 +1,17 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Shopware\ServiceBundle\Manifest;
 
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Finder\Finder;
 
 class ManifestSelector
 {
-    public function __construct(private string $manifestDirectory)
-    {
+    public function __construct(
+        private readonly string $manifestDirectory
+    ) {
     }
 
-    public function choose(string $shopwareVersion): Manifest
+    public function select(string $shopwareVersion): Manifest
     {
         $finder = new Finder();
         $finder->files()->in($this->manifestDirectory)->name('*.xml');
@@ -19,7 +19,7 @@ class ManifestSelector
         $files = [];
 
         foreach ($finder as $file) {
-            preg_match('/manifest-(\d.\d.\d.\d).xml/', $file, $matches);
+            preg_match('/manifest-(\d.\d.\d.\d).xml/', $file->getFilename(), $matches);
             $files[$matches[1]] = $file->getRealPath();
         }
 

@@ -32,7 +32,7 @@ readonly class ShopConfig
             //throw
         }
         
-        $manifest = $this->manifestSelector->choose($version);
+        $manifest = $this->manifestSelector->select($version);
         $this->logger->info(sprintf('Selecting manifest %s for Shopware version %s', $manifest->version, $version));
 
         $client = $this->shopHttpClientFactory->createSimpleClient($shop);
@@ -59,7 +59,7 @@ readonly class ShopConfig
             //throw
         }
 
-        $manifest = $this->manifestSelector->choose($toVersion);
+        $manifest = $this->manifestSelector->select($toVersion);
         $this->logger->info(sprintf('Selecting manifest %s for Shopware version %s', $manifest->version, $toVersion));
 
         $payload = $manifest->getContent();
