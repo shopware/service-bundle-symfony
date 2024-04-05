@@ -2,13 +2,12 @@
 
 namespace Shopware\ServiceBundle\Service;
 
+use Http\Discovery\Psr17Factory;
 use Psr\Log\LoggerInterface;
 use Shopware\App\SDK\AppConfiguration;
 use Shopware\App\SDK\HttpClient\ClientFactory;
 use Shopware\App\SDK\Shop\ShopRepositoryInterface;
 use Shopware\ServiceBundle\Entity\Shop;
-use Shopware\ServiceBundle\Feature\FeatureInstructionSet;
-use Shopware\ServiceBundle\Feature\ShopOperation;
 use Shopware\ServiceBundle\Manifest\ManifestSelector;
 
 readonly class ShopConfig
@@ -23,33 +22,6 @@ readonly class ShopConfig
     {
     }
 
-    public function install(string $shopId, string $version): void
-    {
-        /** @var Shop|null $shop */
-        $shop = $this->shopRepository->getShopFromId($shopId);
-
-        if (null === $shop) {
-            //throw
-        }
-        
-        $manifest = $this->manifestSelector->select($version);
-        $this->logger->info(sprintf('Selecting manifest %s for Shopware version %s', $manifest->version, $version));
-
-        $client = $this->shopHttpClientFactory->createSimpleClient($shop);
-
-        $response = $client->patch(
-            $shop->getShopUrl() . '/api/services/' .  $this->appConfiguration->getAppName() . '/manifest',
-            [
-                'manifest' => $manifest->getContent()
-            ]
-        );
-
-        if ($response->ok()) {
-            $shop->manifestHash = $manifest->hash();
-            $this->shopRepository->updateShop($shop);
-        }
-    }
-
     public function update(string $shopId, string $toVersion): void
     {
         /** @var Shop|null $shop */
@@ -62,18 +34,22 @@ readonly class ShopConfig
         $manifest = $this->manifestSelector->select($toVersion);
         $this->logger->info(sprintf('Selecting manifest %s for Shopware version %s', $manifest->version, $toVersion));
 
-        $payload = $manifest->getContent();
+        $client = $this->shopHttpClientFactory->createClient($shop);
 
-        $client = $this->shopHttpClientFactory->createSimpleClient($shop);
-
-        $response = $client->patch(
-            $shop->getShopUrl() . '/api/services/' .  $this->appConfiguration->getAppName() . '/manifest',
-            [
-                'manifest' => $manifest->getContent()
-            ]
+        $factory = new Psr17Factory();
+        $request = $factory->createRequest(
+            'PATCH',
+            $shop->getShopUrl() . '/api/services/' .  $this->appConfiguration->getAppName() . '/manifest'
         );
 
-        if ($response->ok()) {
+        $request = $request
+            ->withHeader('Accept', 'application/json')
+            ->withHeader('Content-Type', 'application/xml')
+            ->withBody($factory->createStream($manifest->getContent()));
+
+        $response = $client->sendRequest($request);
+
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             $shop->shopVersion = $toVersion;
             $shop->manifestHash = $manifest->hash();
             $this->shopRepository->updateShop($shop);
