@@ -7,4 +7,8 @@
     <route id="shopware_service_lifecycle_update" path="/service/lifecycle/report-update" methods="POST">
         <default key="_controller">\Shopware\ServiceBundle\Controller\LifecycleController::reportUpdate</default>
     </route>
+
+    <route id="shopware_service_lifecycle_install" path="/service/lifecycle/install" methods="GET">
+        <default key="_controller">\Shopware\ServiceBundle\Controller\LifecycleController::install</default>
+    </route>
 </routes>
