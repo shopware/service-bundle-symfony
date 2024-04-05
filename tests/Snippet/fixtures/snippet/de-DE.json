@@ -1,0 +1,8 @@
+{
+  "shopware": {
+    "service-name": {
+      "first-snippet": "Erstes Snippet",
+      "second-snippet": "Zweites Snippet"
+    }
+  }
+}
