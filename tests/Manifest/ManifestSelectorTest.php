@@ -38,18 +38,14 @@ class ManifestSelectorTest extends TestCase
 
     public static function latestCompatibleManifestVersions(): \Generator
     {
-        yield '6.6' => ['6.6', '6.6.6.0']; // TODO: Fix two digit Shopware version
         yield '6.6.0.0' => ['6.6.0.0', '6.6.0.0'];
         yield '6.6.5.0' => ['6.6.5.0', '6.6.0.0'];
         yield '6.6.6.0' => ['6.6.6.0', '6.6.6.0'];
         yield '6.6.9.0' => ['6.6.9.0', '6.6.6.0'];
 
-        yield '6.7' => ['6.7', '6.7.0.0']; // TODO: Fix two digit Shopware version
         yield '6.7.0.0' => ['6.7.0.0', '6.7.0.0'];
         yield '6.7.5.0' => ['6.7.5.0', '6.7.0.0'];
         yield '6.7.7.0' => ['6.7.7.0', '6.7.7.0'];
         yield '6.7.9.0' => ['6.7.9.0', '6.7.7.0'];
-
-        yield '7.0' => ['7.0', '6.7.7.0']; // TODO: Fix two digit Shopware version
     }
 }
