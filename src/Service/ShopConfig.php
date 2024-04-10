@@ -39,7 +39,7 @@ readonly class ShopConfig
         $factory = new Psr17Factory();
         $request = $factory->createRequest(
             'PATCH',
-            $shop->getShopUrl() . '/api/services/' .  $this->appConfiguration->getAppName() . '/manifest'
+            $shop->getShopUrl() . '/api/services/' .  $this->appConfiguration->getAppName()
         );
 
         $request = $request
