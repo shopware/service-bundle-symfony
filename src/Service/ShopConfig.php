@@ -39,7 +39,13 @@ readonly class ShopConfig
         $factory = new Psr17Factory();
         $request = $factory->createRequest(
             'PATCH',
-            $shop->getShopUrl() . '/api/services/' .  $this->appConfiguration->getAppName()
+            sprintf(
+                '%s/api/services/%s/%s-%s',
+                $shop->getShopUrl(),
+                $this->appConfiguration->getAppName(),
+                $toVersion,
+                $manifest->hash
+            )
         );
 
         $request = $request
@@ -51,7 +57,7 @@ readonly class ShopConfig
 
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             $shop->shopVersion = $toVersion;
-            $shop->manifestHash = $manifest->hash();
+            $shop->manifestHash = $manifest->hash;
             $this->shopRepository->updateShop($shop);
         }
     }
