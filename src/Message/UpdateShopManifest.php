@@ -2,7 +2,7 @@
 
 namespace Shopware\ServiceBundle\Message;
 
-class UpdateShopConfig
+class UpdateShopManifest
 {
     public function __construct(public string $shopId, public string $toVersion)
     {

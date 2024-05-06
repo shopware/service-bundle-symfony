@@ -5,7 +5,7 @@ namespace Shopware\ServiceBundle\Controller;
 use Psr\Log\LoggerInterface;
 use Shopware\ServiceBundle\Manifest\ManifestSelector;
 use Shopware\ServiceBundle\Manifest\NoSupportedManifestException;
-use Shopware\ServiceBundle\Message\UpdateShopConfig;
+use Shopware\ServiceBundle\Message\UpdateShopManifest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,7 +28,7 @@ class LifecycleController
     {
         $this->logger->error('Reporting update', $request->payload);
 
-        $this->messageBus->dispatch(new UpdateShopConfig(
+        $this->messageBus->dispatch(new UpdateShopManifest(
             $request->shop->getShopId(),
             $request->payload['new_version'])
         );
@@ -36,13 +36,13 @@ class LifecycleController
         return new Response(null, 204);
     }
 
-    #[Route('/service/lifecycle/install', name: 'api.lifecycle.install', methods: ['POST'])]
+    #[Route('/service/lifecycle/install', name: 'api.lifecycle.install', methods: ['GET'])]
     public function install(Request $request): Response
     {
         try {
             $manifest = $this->manifestSelector->select($request->query->get('shopwareVersion'));
 
-            return new Response($manifest->getContent());
+            return new Response($manifest->content);
         } catch (NoSupportedManifestException $e) {
             return new Response(status: 404);
         }

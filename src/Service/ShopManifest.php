@@ -10,7 +10,7 @@ use Shopware\App\SDK\Shop\ShopRepositoryInterface;
 use Shopware\ServiceBundle\Entity\Shop;
 use Shopware\ServiceBundle\Manifest\ManifestSelector;
 
-readonly class ShopConfig
+readonly class ShopManifest
 {
     public function __construct(
         private ShopRepositoryInterface $shopRepository,
@@ -51,7 +51,7 @@ readonly class ShopConfig
         $request = $request
             ->withHeader('Accept', 'application/json')
             ->withHeader('Content-Type', 'application/xml')
-            ->withBody($factory->createStream($manifest->getContent()));
+            ->withBody($factory->createStream($manifest->content));
 
         $response = $client->sendRequest($request);
 
