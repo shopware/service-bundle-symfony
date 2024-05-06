@@ -10,7 +10,7 @@ use Shopware\AppBundle\Entity\AbstractShop;
 class Shop extends AbstractShop
 {
     #[Column(type: 'string')]
-    public string $shopVersion;
+    public ?string $shopVersion = null;
 
     #[Column(type: 'string')]
     public ?string $manifestHash = null;

@@ -28,7 +28,7 @@ class ManifestSelector
         $selectedVersion = null;
         foreach (array_reverse($files) as $version => $path) {
             if (version_compare($version, $shopwareVersion, '<=')) {
-                $selectedVersion = new Manifest($version, $path);
+                $selectedVersion = new Manifest($version, file_get_contents($path));
                 break;
             }
         }

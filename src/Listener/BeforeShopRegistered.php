@@ -21,6 +21,6 @@ class BeforeShopRegistered
         $shop = $event->getShop();
 
         $shop->shopVersion = $event->getRequest()->getHeaderLine('sw-version');
-        $shop->manifestHash = $this->manifestSelector->select($shop->shopVersion)->hash();
+        $shop->manifestHash = $this->manifestSelector->select($shop->shopVersion)->hash;
     }
 }
