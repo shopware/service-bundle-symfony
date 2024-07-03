@@ -3,15 +3,15 @@
 namespace Manifest;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use Shopware\ServiceBundle\Manifest\Manifest;
+use Shopware\ServiceBundle\App\App;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(Manifest::class)]
+#[CoversClass(App::class)]
 class ManifestTest extends TestCase
 {
     public function testManifestHashesContent(): void
     {
-        $manifest = new Manifest('6.6.0.0', 'my-manifest-content');
+        $manifest = new App('6.6.0.0', 'my-manifest-content');
 
         static::assertSame('6.6.0.0', $manifest->version);
         static::assertSame('my-manifest-content', $manifest->content);

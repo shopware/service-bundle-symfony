@@ -5,15 +5,15 @@ namespace Shopware\ServiceBundle\Test\Manifest;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Shopware\ServiceBundle\Manifest\ManifestSelector;
-use Shopware\ServiceBundle\Manifest\NoSupportedManifestException;
+use Shopware\ServiceBundle\App\AppSelector;
+use Shopware\ServiceBundle\App\NoSupportedAppException;
 
-#[CoversClass(ManifestSelector::class)]
+#[CoversClass(AppSelector::class)]
 class ManifestSelectorTest extends TestCase
 {
     public function testShopware66DevVersion(): void
     {
-        $selector = new ManifestSelector(__DIR__ . '/manifests');
+        $selector = new AppSelector(__DIR__ . '/manifests');
         $manifest = $selector->select('6.6.9999999.9999999-dev');
         
         static::assertSame('6.6.6.0', $manifest->version);
@@ -22,7 +22,7 @@ class ManifestSelectorTest extends TestCase
     #[DataProvider('latestCompatibleManifestVersions')]
     public function testSelectsLatestCompatibleManifestVersion(string $shopwareVersion, string $selectedVersion): void
     {
-        $selector = new ManifestSelector(__DIR__ . '/manifests');
+        $selector = new AppSelector(__DIR__ . '/manifests');
         $manifest = $selector->select($shopwareVersion);
         
         static::assertSame($selectedVersion, $manifest->version);
@@ -30,9 +30,9 @@ class ManifestSelectorTest extends TestCase
 
     public function testThrowsIfNoCompatibleManifestVersionCanBeSelected(): void
     {
-        $selector = new ManifestSelector(__DIR__ . '/manifests');
+        $selector = new AppSelector(__DIR__ . '/manifests');
 
-        static::expectException(NoSupportedManifestException::class);
+        static::expectException(NoSupportedAppException::class);
         $selector->select('6.5');
     }
 
