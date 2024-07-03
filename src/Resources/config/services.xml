@@ -7,9 +7,10 @@
 
         <prototype namespace="Shopware\ServiceBundle\" resource="../../" exclude="../src/{DependencyInjection,Entity}"/>
 
-        <service id="Shopware\ServiceBundle\Manifest\Manifest" autowire="false">
+        <service id="Shopware\ServiceBundle\App\App" autowire="false">
         </service>
-        <service id="Shopware\ServiceBundle\Manifest\ManifestSelector">
+
+        <service id="Shopware\ServiceBundle\App\AppLoader">
             <argument></argument>
         </service>
     </services>

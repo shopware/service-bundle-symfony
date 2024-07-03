@@ -13,5 +13,8 @@ class Shop extends AbstractShop
     public ?string $shopVersion = null;
 
     #[Column(type: 'string')]
-    public ?string $manifestHash = null;
+    public ?string $selectedAppVersion = null;
+
+    #[Column(type: 'string')]
+    public ?string $selectedAppHash = null;
 }

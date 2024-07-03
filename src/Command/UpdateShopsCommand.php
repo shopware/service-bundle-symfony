@@ -2,7 +2,7 @@
 
 namespace Shopware\ServiceBundle\Command;
 
-use Shopware\ServiceBundle\Service\ShopUpdater;
+use Shopware\ServiceBundle\Service\UpdateAllShops;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class UpdateShopsCommand extends Command
 {
-    public function __construct(private readonly ShopUpdater $shopUpdater)
+    public function __construct(private readonly UpdateAllShops $shopUpdater)
     {
         parent::__construct();
     }

@@ -1,28 +1,30 @@
 <?php declare(strict_types=1);
 
-namespace Shopware\ServiceBundle\Test\Manifest;
+namespace Shopware\ServiceBundle\Test\App;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Shopware\ServiceBundle\Manifest\ManifestSelector;
-use Shopware\ServiceBundle\Manifest\NoSupportedManifestException;
+use Shopware\ServiceBundle\App\AppHasher;
+use Shopware\ServiceBundle\App\AppLoader;
+use Shopware\ServiceBundle\App\AppSelector;
+use Shopware\ServiceBundle\App\NoSupportedAppException;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
-#[CoversClass(ManifestSelector::class)]
-class ManifestSelectorTest extends TestCase
+#[CoversClass(AppSelector::class)]
+class AppSelectorTest extends TestCase
 {
     public function testShopware66DevVersion(): void
     {
-        $selector = new ManifestSelector(__DIR__ . '/manifests');
+        $selector = new AppSelector(new AppLoader(__DIR__ . '/apps', new AppHasher(), new ArrayAdapter()));
         $manifest = $selector->select('6.6.9999999.9999999-dev');
-        
         static::assertSame('6.6.6.0', $manifest->version);
     }
 
     #[DataProvider('latestCompatibleManifestVersions')]
     public function testSelectsLatestCompatibleManifestVersion(string $shopwareVersion, string $selectedVersion): void
     {
-        $selector = new ManifestSelector(__DIR__ . '/manifests');
+        $selector = new AppSelector(new AppLoader(__DIR__ . '/apps', new AppHasher(), new ArrayAdapter()));
         $manifest = $selector->select($shopwareVersion);
         
         static::assertSame($selectedVersion, $manifest->version);
@@ -30,9 +32,9 @@ class ManifestSelectorTest extends TestCase
 
     public function testThrowsIfNoCompatibleManifestVersionCanBeSelected(): void
     {
-        $selector = new ManifestSelector(__DIR__ . '/manifests');
+        $selector = new AppSelector(new AppLoader(__DIR__ . '/apps', new AppHasher(), new ArrayAdapter()));
 
-        static::expectException(NoSupportedManifestException::class);
+        static::expectException(NoSupportedAppException::class);
         $selector->select('6.5');
     }
 

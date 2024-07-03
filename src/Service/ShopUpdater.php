@@ -2,57 +2,65 @@
 
 namespace Shopware\ServiceBundle\Service;
 
-use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
+use Shopware\App\SDK\AppConfiguration;
+use Shopware\App\SDK\HttpClient\ClientFactory;
+use Shopware\App\SDK\Shop\ShopRepositoryInterface;
+use Shopware\ServiceBundle\App\App;
+use Shopware\ServiceBundle\App\AppSelector;
 use Shopware\ServiceBundle\Entity\Shop;
-use Shopware\ServiceBundle\Manifest\ManifestSelector;
-use Shopware\ServiceBundle\Message\UpdateShopManifest;
-use Symfony\Component\Messenger\MessageBusInterface;
 
-class ShopUpdater
+readonly class ShopUpdater
 {
     public function __construct(
-        private readonly ManagerRegistry $registry,
-        private readonly ManifestSelector $manifestSelector,
-        private readonly MessageBusInterface $messageBus
+        private ShopRepositoryInterface $shopRepository,
+        private AppSelector             $appSelector,
+        private ClientFactory           $shopHttpClientFactory,
+        private AppConfiguration        $appConfiguration,
+        private LoggerInterface         $logger
     )
     {
     }
 
-    public function execute(): void
+    public function run(string $shopId, string $toVersion): void
     {
-        foreach ($this->findAll() as $shop) {
-            $manifest = $this->manifestSelector->select($shop->shopVersion);
+        /** @var Shop|null $shop */
+        $shop = $this->shopRepository->getShopFromId($shopId);
 
-            if ($shop->manifestHash === null || $manifest->hash !== $shop->manifestHash) {
-                //if the manifest hash is not set, lets send the most applicable manifest
-                //if it's set but the corresponding file hash is different, it means it's been updated,
-                //so we send the latest version
-                $this->messageBus->dispatch(new UpdateShopManifest($shop->getShopId(), $shop->shopVersion));
-            }
+        if (null === $shop) {
+            //throw
+        }
+
+        $app = $this->appSelector->select($toVersion);
+
+
+        if (!$this->isNewUpdateAvailable($shop, $app)) {
+            $this->logger->debug(sprintf('No new app available for shop %s running Shopware %s - using app version %s', $shop->getShopId(), $shop->shopVersion, $shop->selectedAppVersion));
+            return;
+        }
+
+        $this->logger->info(sprintf('New version of  app %s for Shopware version %s available', $app->version, $toVersion));
+
+        $client = $this->shopHttpClientFactory->createSimpleClient($shop);
+
+        $response = $client->post($shop->getShopUrl() . '/api/services/trigger-update');
+
+        if ($response->getStatusCode() !== 200) {
+            //we should try again
         }
     }
 
-    /**
-     * @return iterable<Shop>
-     */
-    private function findAll(): iterable
+    private function isNewUpdateAvailable(Shop $shop, App $app): bool
     {
-        $repository = $this->registry->getRepository(Shop::class);
+        return $shop->selectedAppVersion !== $app->version || $shop->selectedAppHash !== $app->hash;
+    }
 
-        $batchCount = 100;
+    public function markShopUpdated(Shop $shop, string $version, string $hash): void
+    {
+        $shop->shopVersion = $version;
+        $shop->selectedAppVersion = $version;
+        $shop->selectedAppHash = $hash;
 
-        // current offset to navigate over the entire set
-        $offset = 0;
-
-        do {
-            /** @var Shop[] $shops */
-            $shops = $repository->findBy([], null, $batchCount, $offset);
-
-            yield from $shops;
-
-            $offset += $batchCount;
-
-            $this->registry->getManager()->clear();
-        } while (\count($shops) > 0);
+        $this->shopRepository->updateShop($shop);
     }
 }

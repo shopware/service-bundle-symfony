@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shopware\ServiceBundle\DependencyInjection;
 
-use Shopware\ServiceBundle\Manifest\ManifestSelector;
+use Shopware\ServiceBundle\App\AppLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -23,8 +23,8 @@ final class ShopwareServiceExtension extends Extension
 
         $loader->load('services.xml');
 
-        $container->getDefinition(ManifestSelector::class)
-            ->replaceArgument(0, $config['manifest_directory']);
+        $container->getDefinition(AppLoader::class)
+            ->replaceArgument(0, $config['app_directory']);
 
     }
 }
