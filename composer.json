@@ -27,7 +27,8 @@
         "shopware/app-bundle": "^2.0",
         "symfony/messenger": "^7.0",
         "symfony/finder": "*",
-      "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "ext-zip": "*"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.16",
