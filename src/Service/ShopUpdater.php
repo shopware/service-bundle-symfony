@@ -9,16 +9,16 @@ use Shopware\ServiceBundle\App\App;
 use Shopware\ServiceBundle\App\AppSelector;
 use Shopware\ServiceBundle\Entity\Shop;
 
-readonly class ShopUpdater
+class ShopUpdater
 {
     /**
      * @param ShopRepositoryInterface<Shop> $shopRepository
      */
     public function __construct(
-        private ShopRepositoryInterface $shopRepository,
-        private AppSelector $appSelector,
-        private ClientFactory $shopHttpClientFactory,
-        private LoggerInterface $logger,
+        private readonly ShopRepositoryInterface $shopRepository,
+        private readonly AppSelector $appSelector,
+        private readonly ClientFactory $shopHttpClientFactory,
+        private readonly LoggerInterface $logger,
     ) {}
 
     public function run(string $shopId, string $toVersion): void
@@ -27,18 +27,17 @@ readonly class ShopUpdater
         $shop = $this->shopRepository->getShopFromId($shopId);
 
         if (null === $shop) {
-            throw new \RuntimeException(sprintf('Shop with id %s not found', $shopId));
+            throw new \RuntimeException(sprintf('Shop with id "%s" not found', $shopId));
         }
 
         $app = $this->appSelector->select($toVersion);
 
-
         if (!$this->isNewUpdateAvailable($shop, $app)) {
-            $this->logger->debug(sprintf('No new app available for shop %s running Shopware %s - using app version %s', $shop->getShopId(), $shop->shopVersion, $shop->selectedAppVersion));
+            $this->logger->debug(sprintf('No new app available for shop "%s" running Shopware "%s" - using app version "%s"', $shop->getShopId(), $shop->shopVersion, $shop->selectedAppVersion));
             return;
         }
 
-        $this->logger->info(sprintf('New version of  app %s for Shopware version %s available', $app->version, $toVersion));
+        $this->logger->info(sprintf('New version of app "%s" for Shopware version "%s" available', $app->version, $toVersion));
 
         $client = $this->shopHttpClientFactory->createSimpleClient($shop);
 

@@ -9,7 +9,6 @@ use Shopware\ServiceBundle\Entity\Shop;
 use Shopware\ServiceBundle\Message\ShopUpdated;
 use Shopware\ServiceBundle\Service\ShopUpdater;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Shopware\App\SDK\Context\Webhook\WebhookAction;
@@ -27,6 +26,7 @@ class LifecycleController
         private readonly AppSelector $appSelector,
         private readonly ShopUpdater $shopUpdater,
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly AppZipper $appZipper,
     ) {}
 
     #[Route('/service/lifecycle/choose-app', name: 'api.lifecycle.choose-app', methods: ['GET'])]
@@ -43,15 +43,15 @@ class LifecycleController
     }
 
     #[Route('/service/lifecycle/app-zip/{version}', name: 'api.lifecycle.app-zip', methods: ['GET'], requirements: ['version' => '\d/.\d/.\d/.\d'])]
-    public function getAppZip(Request $request, string $version): Response
+    public function getAppZip(string $version): Response
     {
         $app = $this->appSelector->specific($version);
 
-        $zipContent = (new AppZipper())->zip($app);
+        $zipContent = $this->appZipper->zip($app);
 
         $response = new Response($zipContent);
-        $response->headers->set('sw-app-revision', $app->version . '-' . $app->hash);
         $response->headers->set('sw-app-version', $app->version);
+        $response->headers->set('sw-app-revision', $app->revision);
         $response->headers->set('sw-app-hash', $app->hash);
         $response->headers->set('sw-app-zip-url', $this->urlGenerator->generate('shopware_service_lifecycle_app_zip', ['version' => $app->version]));
         $response->headers->set('Content-Type', 'application/zip');
@@ -62,13 +62,13 @@ class LifecycleController
 
     public function reportUpdate(WebhookAction $request): Response
     {
-        $this->logger->info('Reporting update', $request->payload);
-
-        $newVersion = $request->payload['newVersion'];
+        $newVersion = $request->payload['newVersion'] ?? null;
 
         if (!is_string($newVersion)) {
             return new Response(null, 422);
         }
+
+        $this->logger->info(sprintf('Reporting update for shop: "%s" to version: "%s"', $request->shop->getShopId(), $newVersion), $request->payload);
 
         $this->messageBus->dispatch(new ShopUpdated(
             $request->shop->getShopId(),
@@ -80,16 +80,14 @@ class LifecycleController
 
     public function serviceUpdateFinished(WebhookAction $request): Response
     {
-        $this->logger->info('Service was updated in shop', $request->payload);
+        $version = $request->payload['appVersion'] ?? null;
+        $hash = $request->payload['appHash'] ?? null;
 
-        $version = $request->payload['appVersion'];
-
-        if (!is_string($version)) {
+        if (!is_string($version) || !is_string($hash)) {
             return new Response(null, 422);
         }
 
-        [$version, $hash] = explode('-', $version);
-
+        $this->logger->info(sprintf('Service was updated for shop: "%s"', $request->shop->getShopId()), $request->payload);
         /** @var Shop $shop */
         $shop = $request->shop;
 

@@ -25,6 +25,5 @@ final class ShopwareServiceExtension extends Extension
 
         $container->getDefinition(AppLoader::class)
             ->replaceArgument(0, $config['app_directory']);
-
     }
 }
