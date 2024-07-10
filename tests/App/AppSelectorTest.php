@@ -7,6 +7,7 @@ namespace Shopware\ServiceBundle\Test\App;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Shopware\ServiceBundle\App\App;
 use Shopware\ServiceBundle\App\AppHasher;
 use Shopware\ServiceBundle\App\AppLoader;
 use Shopware\ServiceBundle\App\AppSelector;
@@ -14,6 +15,10 @@ use Shopware\ServiceBundle\App\NoSupportedAppException;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 
 #[CoversClass(AppSelector::class)]
+#[CoversClass(AppHasher::class)]
+#[CoversClass(AppLoader::class)]
+#[CoversClass(App::class)]
+#[CoversClass(NoSupportedAppException::class)]
 class AppSelectorTest extends TestCase
 {
     public function testShopware66DevVersion(): void

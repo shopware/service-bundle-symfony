@@ -14,6 +14,7 @@ use Shopware\ServiceBundle\App\App;
 use Shopware\ServiceBundle\App\AppSelector;
 
 #[CoversClass(BeforeShopRegistered::class)]
+#[CoversClass(App::class)]
 class BeforeShopRegisteredTest extends TestCase
 {
     public function testShopAndAppHashIsSavedOnShop(): void
