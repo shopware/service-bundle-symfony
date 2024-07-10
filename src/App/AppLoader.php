@@ -12,9 +12,7 @@ class AppLoader
         private readonly string $appDirectory,
         private readonly AppHasher $appHasher,
         private readonly CacheInterface $cache
-    )
-    {
-    }
+    ) {}
 
     /**
      * @return array<App>
@@ -36,13 +34,13 @@ class AppLoader
                 ];
             }
 
-            usort($apps, static fn ($a, $b) => $a['location'] <=> $b['location']);
+            usort($apps, static fn($a, $b) => $a['location'] <=> $b['location']);
 
             return $apps;
         });
 
         return array_map(
-            static fn ($app) => new App(
+            static fn($app) => new App(
                 $app['location'],
                 $app['name'],
                 basename($app['location']),

@@ -5,7 +5,6 @@ namespace Shopware\ServiceBundle\Controller;
 use Psr\Log\LoggerInterface;
 use Shopware\ServiceBundle\App\AppSelector;
 use Shopware\ServiceBundle\App\AppZipper;
-use Shopware\ServiceBundle\App\NoSupportedAppException;
 use Shopware\ServiceBundle\Entity\Shop;
 use Shopware\ServiceBundle\Message\ShopUpdated;
 use Shopware\ServiceBundle\Service\ShopUpdater;
@@ -28,14 +27,13 @@ class LifecycleController
         private readonly AppSelector $appSelector,
         private readonly ShopUpdater $shopUpdater,
         private readonly UrlGeneratorInterface $urlGenerator,
-    ) {
-    }
+    ) {}
 
     #[Route('/service/lifecycle/choose-app', name: 'api.lifecycle.choose-app', methods: ['GET'])]
     public function chooseApp(#[MapQueryParameter] string $shopwareVersion): Response
     {
         $app = $this->appSelector->select($shopwareVersion);
-        
+
         return new JsonResponse([
             'app-version' => $app->version,
             'app-revision' => $app->revision,
@@ -61,7 +59,7 @@ class LifecycleController
 
         return $response;
     }
-    
+
     public function reportUpdate(WebhookAction $request): Response
     {
         $this->logger->info('Reporting update', $request->payload);
@@ -71,7 +69,7 @@ class LifecycleController
         if (!is_string($newVersion)) {
             return new Response(null, 422);
         }
-        
+
         $this->messageBus->dispatch(new ShopUpdated(
             $request->shop->getShopId(),
             $newVersion

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Shopware\ServiceBundle\Test\App;
 
@@ -26,7 +28,7 @@ class AppSelectorTest extends TestCase
     {
         $selector = new AppSelector(new AppLoader(__DIR__ . '/apps', new AppHasher(), new ArrayAdapter()));
         $manifest = $selector->select($shopwareVersion);
-        
+
         static::assertSame($selectedVersion, $manifest->version);
     }
 

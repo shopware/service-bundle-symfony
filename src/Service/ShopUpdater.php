@@ -19,9 +19,7 @@ readonly class ShopUpdater
         private AppSelector $appSelector,
         private ClientFactory $shopHttpClientFactory,
         private LoggerInterface $logger
-    )
-    {
-    }
+    ) {}
 
     public function run(string $shopId, string $toVersion): void
     {

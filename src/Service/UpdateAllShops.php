@@ -14,9 +14,7 @@ class UpdateAllShops
         private readonly ManagerRegistry     $registry,
         private readonly AppSelector         $manifestSelector,
         private readonly MessageBusInterface $messageBus
-    )
-    {
-    }
+    ) {}
 
     public function execute(): void
     {

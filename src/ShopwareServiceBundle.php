@@ -6,6 +6,4 @@ namespace Shopware\ServiceBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-final class ShopwareServiceBundle extends Bundle
-{
-}
+final class ShopwareServiceBundle extends Bundle {}
