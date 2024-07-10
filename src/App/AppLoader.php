@@ -54,7 +54,15 @@ class AppLoader
 
     private function getAppName(string $path): string
     {
-        $xml = simplexml_load_string(file_get_contents($path));
+        if (!file_exists($path)) {
+            throw new \RuntimeException('Could not find manifest.xml');
+        }
+
+        $xml = simplexml_load_string((string) file_get_contents($path));
+
+        if ($xml === false) {
+            throw new \RuntimeException('Could not parse manifest.xml');
+        }
 
         return (string) $xml->meta->name;
     }

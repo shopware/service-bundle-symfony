@@ -19,7 +19,7 @@ class BeforeShopRegisteredTest extends TestCase
         $request = new Request('POST', 'https://example.com', ['Content-Type' => 'application/json', 'sw-version' => '6.6.0.0'], '', );
         $shop = new Shop('shop-id', 'myshop.com', 'secret');
 
-        $event = new BeforeRegistrationCompletedEvent($shop, $request, []);
+        $event = new BeforeRegistrationCompletedEvent($shop, $request, ['apiKey' => '', 'secretKey' => '']);
 
         static::assertNull($shop->shopVersion);
         static::assertNull($shop->selectedAppHash);

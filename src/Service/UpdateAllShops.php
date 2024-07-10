@@ -21,13 +21,16 @@ class UpdateAllShops
     public function execute(): void
     {
         foreach ($this->findAll() as $shop) {
-            $manifest = $this->manifestSelector->select($shop->shopVersion);
+            /** @var string $shopVersion */
+            $shopVersion = $shop->shopVersion;
 
-            if ($shop->manifestHash === null || $manifest->hash !== $shop->manifestHash) {
+            $manifest = $this->manifestSelector->select($shopVersion);
+
+            if ($shop->selectedAppHash === null || $manifest->hash !== $shop->selectedAppHash) {
                 //if the manifest hash is not set, lets send the most applicable manifest
                 //if it's set but the corresponding file hash is different, it means it's been updated,
                 //so we send the latest version
-                $this->messageBus->dispatch(new ShopUpdated($shop->getShopId(), $shop->shopVersion));
+                $this->messageBus->dispatch(new ShopUpdated($shop->getShopId(), $shopVersion));
             }
         }
     }

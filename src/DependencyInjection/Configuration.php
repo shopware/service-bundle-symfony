@@ -22,8 +22,7 @@ final class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('app_directory')
                     ->defaultValue('%kernel.project_dir%/app')
-                ->end()
-            ->end();
+                ->end();
 
         return $treeBuilder;
     }

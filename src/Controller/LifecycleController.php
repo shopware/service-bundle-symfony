@@ -65,11 +65,17 @@ class LifecycleController
     public function reportUpdate(WebhookAction $request): Response
     {
         $this->logger->info('Reporting update', $request->payload);
+
+        $newVersion = $request->payload['newVersion'];
+
+        if (!is_string($newVersion)) {
+            return new Response(null, 422);
+        }
         
         $this->messageBus->dispatch(new ShopUpdated(
             $request->shop->getShopId(),
-            $request->payload['newVersion'])
-        );
+            $newVersion
+        ));
 
         return new Response(null, 204);
     }
@@ -78,7 +84,13 @@ class LifecycleController
     {
         $this->logger->info('Service was updated in shop', $request->payload);
 
-        [$version, $hash] = explode('-', $request->payload['appVersion']);
+        $version = $request->payload['appVersion'];
+
+        if (!is_string($version)) {
+            return new Response(null, 422);
+        }
+
+        [$version, $hash] = explode('-', $version);
 
         /** @var Shop $shop */
         $shop = $request->shop;

@@ -17,6 +17,7 @@ class AppHasher
 
         $data = [];
         foreach ($iterator as $file) {
+            /** @var \SplFileInfo $file */
             $data[] = hash_file('sha256', $file->getPathname());
             $data[] = $file->getFilename();
         }
