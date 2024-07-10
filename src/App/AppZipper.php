@@ -12,13 +12,18 @@ class AppZipper
     {
         $zip = new ZipArchive();
         $tempFile = tempnam(sys_get_temp_dir(), 'zip');
+
+        if ($tempFile === false) {
+            throw new \RuntimeException('Could not create temp file');
+        }
+
         if ($zip->open($tempFile, ZipArchive::CREATE) !== true) {
             throw new \RuntimeException('Could not create zip file');
         }
 
         $files = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($app->location, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::LEAVES_ONLY
+            RecursiveIteratorIterator::LEAVES_ONLY,
         );
 
         foreach ($files as $file) {
@@ -32,7 +37,7 @@ class AppZipper
 
         $zip->close();
 
-        $content =  file_get_contents($tempFile);
+        $content =  (string) file_get_contents($tempFile);
 
         unlink($tempFile);
 

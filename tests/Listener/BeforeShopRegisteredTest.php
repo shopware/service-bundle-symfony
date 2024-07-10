@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Shopware\ServiceBundle\Test\Listener;
 
@@ -12,6 +14,7 @@ use Shopware\ServiceBundle\App\App;
 use Shopware\ServiceBundle\App\AppSelector;
 
 #[CoversClass(BeforeShopRegistered::class)]
+#[CoversClass(App::class)]
 class BeforeShopRegisteredTest extends TestCase
 {
     public function testShopAndAppHashIsSavedOnShop(): void
@@ -19,7 +22,7 @@ class BeforeShopRegisteredTest extends TestCase
         $request = new Request('POST', 'https://example.com', ['Content-Type' => 'application/json', 'sw-version' => '6.6.0.0'], '', );
         $shop = new Shop('shop-id', 'myshop.com', 'secret');
 
-        $event = new BeforeRegistrationCompletedEvent($shop, $request, []);
+        $event = new BeforeRegistrationCompletedEvent($shop, $request, ['apiKey' => '', 'secretKey' => '']);
 
         static::assertNull($shop->shopVersion);
         static::assertNull($shop->selectedAppHash);

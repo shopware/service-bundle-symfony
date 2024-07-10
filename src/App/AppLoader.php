@@ -11,10 +11,8 @@ class AppLoader
     public function __construct(
         private readonly string $appDirectory,
         private readonly AppHasher $appHasher,
-        private readonly CacheInterface $cache
-    )
-    {
-    }
+        private readonly CacheInterface $cache,
+    ) {}
 
     /**
      * @return array<App>
@@ -32,29 +30,37 @@ class AppLoader
                 $apps[] = [
                     'location' => $path,
                     'name' => $this->getAppName($path . '/manifest.xml'),
-                    'hash' => $this->appHasher->hash($path)
+                    'hash' => $this->appHasher->hash($path),
                 ];
             }
 
-            usort($apps, static fn ($a, $b) => $a['location'] <=> $b['location']);
+            usort($apps, static fn($a, $b) => $a['location'] <=> $b['location']);
 
             return $apps;
         });
 
         return array_map(
-            static fn ($app) => new App(
+            static fn($app) => new App(
                 $app['location'],
                 $app['name'],
                 basename($app['location']),
-                $app['hash']
+                $app['hash'],
             ),
-            $appData
+            $appData,
         );
     }
 
     private function getAppName(string $path): string
     {
-        $xml = simplexml_load_string(file_get_contents($path));
+        if (!file_exists($path)) {
+            throw new \RuntimeException('Could not find manifest.xml');
+        }
+
+        $xml = simplexml_load_string((string) file_get_contents($path));
+
+        if ($xml === false) {
+            throw new \RuntimeException('Could not parse manifest.xml');
+        }
 
         return (string) $xml->meta->name;
     }

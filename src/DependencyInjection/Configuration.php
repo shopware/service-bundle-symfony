@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Shopware\ServiceBundle\DependencyInjection;
 
-use Shopware\AppBundle\Entity\AbstractShop;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -22,8 +21,7 @@ final class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('app_directory')
                     ->defaultValue('%kernel.project_dir%/app')
-                ->end()
-            ->end();
+                ->end();
 
         return $treeBuilder;
     }

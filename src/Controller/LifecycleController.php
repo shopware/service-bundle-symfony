@@ -5,7 +5,6 @@ namespace Shopware\ServiceBundle\Controller;
 use Psr\Log\LoggerInterface;
 use Shopware\ServiceBundle\App\AppSelector;
 use Shopware\ServiceBundle\App\AppZipper;
-use Shopware\ServiceBundle\App\NoSupportedAppException;
 use Shopware\ServiceBundle\Entity\Shop;
 use Shopware\ServiceBundle\Message\ShopUpdated;
 use Shopware\ServiceBundle\Service\ShopUpdater;
@@ -28,19 +27,18 @@ class LifecycleController
         private readonly AppSelector $appSelector,
         private readonly ShopUpdater $shopUpdater,
         private readonly UrlGeneratorInterface $urlGenerator,
-    ) {
-    }
+    ) {}
 
     #[Route('/service/lifecycle/choose-app', name: 'api.lifecycle.choose-app', methods: ['GET'])]
     public function chooseApp(#[MapQueryParameter] string $shopwareVersion): Response
     {
         $app = $this->appSelector->select($shopwareVersion);
-        
+
         return new JsonResponse([
             'app-version' => $app->version,
             'app-revision' => $app->revision,
             'app-hash' => $app->hash,
-            'app-zip-url' =>  $this->urlGenerator->generate('shopware_service_lifecycle_app_zip', ['version' => $app->version])
+            'app-zip-url' =>  $this->urlGenerator->generate('shopware_service_lifecycle_app_zip', ['version' => $app->version]),
         ]);
     }
 
@@ -61,15 +59,21 @@ class LifecycleController
 
         return $response;
     }
-    
+
     public function reportUpdate(WebhookAction $request): Response
     {
         $this->logger->info('Reporting update', $request->payload);
-        
+
+        $newVersion = $request->payload['newVersion'];
+
+        if (!is_string($newVersion)) {
+            return new Response(null, 422);
+        }
+
         $this->messageBus->dispatch(new ShopUpdated(
             $request->shop->getShopId(),
-            $request->payload['newVersion'])
-        );
+            $newVersion,
+        ));
 
         return new Response(null, 204);
     }
@@ -78,7 +82,13 @@ class LifecycleController
     {
         $this->logger->info('Service was updated in shop', $request->payload);
 
-        [$version, $hash] = explode('-', $request->payload['appVersion']);
+        $version = $request->payload['appVersion'];
+
+        if (!is_string($version)) {
+            return new Response(null, 422);
+        }
+
+        [$version, $hash] = explode('-', $version);
 
         /** @var Shop $shop */
         $shop = $request->shop;

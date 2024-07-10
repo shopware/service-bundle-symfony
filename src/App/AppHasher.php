@@ -12,11 +12,12 @@ class AppHasher
     {
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::LEAVES_ONLY
+            RecursiveIteratorIterator::LEAVES_ONLY,
         );
 
         $data = [];
         foreach ($iterator as $file) {
+            /** @var \SplFileInfo $file */
             $data[] = hash_file('sha256', $file->getPathname());
             $data[] = $file->getFilename();
         }

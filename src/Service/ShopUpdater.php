@@ -3,7 +3,6 @@
 namespace Shopware\ServiceBundle\Service;
 
 use Psr\Log\LoggerInterface;
-use Shopware\App\SDK\AppConfiguration;
 use Shopware\App\SDK\HttpClient\ClientFactory;
 use Shopware\App\SDK\Shop\ShopRepositoryInterface;
 use Shopware\ServiceBundle\App\App;
@@ -12,15 +11,15 @@ use Shopware\ServiceBundle\Entity\Shop;
 
 readonly class ShopUpdater
 {
+    /**
+     * @param ShopRepositoryInterface<Shop> $shopRepository
+     */
     public function __construct(
         private ShopRepositoryInterface $shopRepository,
-        private AppSelector             $appSelector,
-        private ClientFactory           $shopHttpClientFactory,
-        private AppConfiguration        $appConfiguration,
-        private LoggerInterface         $logger
-    )
-    {
-    }
+        private AppSelector $appSelector,
+        private ClientFactory $shopHttpClientFactory,
+        private LoggerInterface $logger,
+    ) {}
 
     public function run(string $shopId, string $toVersion): void
     {
@@ -28,7 +27,7 @@ readonly class ShopUpdater
         $shop = $this->shopRepository->getShopFromId($shopId);
 
         if (null === $shop) {
-            //throw
+            throw new \RuntimeException(sprintf('Shop with id %s not found', $shopId));
         }
 
         $app = $this->appSelector->select($toVersion);

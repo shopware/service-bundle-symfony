@@ -10,11 +10,8 @@ use Shopware\App\SDK\Event\BeforeRegistrationCompletedEvent;
 #[AsEventListener]
 class BeforeShopRegistered
 {
-    public function __construct(private AppSelector $appSelector)
-    {
+    public function __construct(private AppSelector $appSelector) {}
 
-    }
-    
     public function __invoke(BeforeRegistrationCompletedEvent $event): void
     {
         /** @var Shop $shop */
