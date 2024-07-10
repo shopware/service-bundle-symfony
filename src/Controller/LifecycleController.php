@@ -38,7 +38,7 @@ class LifecycleController
             'app-version' => $app->version,
             'app-revision' => $app->revision,
             'app-hash' => $app->hash,
-            'app-zip-url' =>  $this->urlGenerator->generate('shopware_service_lifecycle_app_zip', ['version' => $app->version])
+            'app-zip-url' =>  $this->urlGenerator->generate('shopware_service_lifecycle_app_zip', ['version' => $app->version]),
         ]);
     }
 
@@ -72,7 +72,7 @@ class LifecycleController
 
         $this->messageBus->dispatch(new ShopUpdated(
             $request->shop->getShopId(),
-            $newVersion
+            $newVersion,
         ));
 
         return new Response(null, 204);

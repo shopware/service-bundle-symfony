@@ -23,7 +23,7 @@ class AppZipper
 
         $files = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($app->location, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::LEAVES_ONLY
+            RecursiveIteratorIterator::LEAVES_ONLY,
         );
 
         foreach ($files as $file) {

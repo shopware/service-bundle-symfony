@@ -11,7 +11,7 @@ class AppLoader
     public function __construct(
         private readonly string $appDirectory,
         private readonly AppHasher $appHasher,
-        private readonly CacheInterface $cache
+        private readonly CacheInterface $cache,
     ) {}
 
     /**
@@ -30,7 +30,7 @@ class AppLoader
                 $apps[] = [
                     'location' => $path,
                     'name' => $this->getAppName($path . '/manifest.xml'),
-                    'hash' => $this->appHasher->hash($path)
+                    'hash' => $this->appHasher->hash($path),
                 ];
             }
 
@@ -44,9 +44,9 @@ class AppLoader
                 $app['location'],
                 $app['name'],
                 basename($app['location']),
-                $app['hash']
+                $app['hash'],
             ),
-            $appData
+            $appData,
         );
     }
 

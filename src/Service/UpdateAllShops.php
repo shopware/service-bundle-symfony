@@ -13,7 +13,7 @@ class UpdateAllShops
     public function __construct(
         private readonly ManagerRegistry     $registry,
         private readonly AppSelector         $manifestSelector,
-        private readonly MessageBusInterface $messageBus
+        private readonly MessageBusInterface $messageBus,
     ) {}
 
     public function execute(): void

@@ -18,7 +18,7 @@ readonly class ShopUpdater
         private ShopRepositoryInterface $shopRepository,
         private AppSelector $appSelector,
         private ClientFactory $shopHttpClientFactory,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
     ) {}
 
     public function run(string $shopId, string $toVersion): void

@@ -7,7 +7,7 @@ namespace Shopware\ServiceBundle\App;
 class AppSelector
 {
     public function __construct(
-        private readonly AppLoader $appLoader
+        private readonly AppLoader $appLoader,
     ) {}
 
     public function select(string $shopwareVersion): App
