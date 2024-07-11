@@ -25,7 +25,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 #[CoversClass(App::class)]
 class LifecycleControllerTest extends TestCase
 {
-    public function testChooseAppSelectAppropriateAppVersionAndReturnsInfo(): void
+    public function testSelectAppSelectAppropriateAppVersionAndReturnsInfo(): void
     {
         $appSelector = $this->createMock(AppSelector::class);
         $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
@@ -51,7 +51,7 @@ class LifecycleControllerTest extends TestCase
             ->with('shopware_service_lifecycle_app_zip', ['version' => '6.6.0.0'])
             ->willReturn('/download/link/for/app');
 
-        $response = $controller->chooseApp('6.6.0.0');
+        $response = $controller->selectApp('6.6.0.0');
 
         static::assertEquals(200, $response->getStatusCode());
         static::assertInstanceOf(JsonResponse::class, $response);
@@ -198,9 +198,7 @@ class LifecycleControllerTest extends TestCase
 
         yield 'missing appVersion' => [['appHash' => 'aabbcc']];
 
-        yield 'missing appHash' => [['appVersion' => '2.0.0']];
-
-        yield 'wrong values' => [['appVersion' => 1, 'appHash' => null]];
+        yield 'wrong values' => [['appVersion' => 1]];
     }
 
     /**
@@ -270,7 +268,7 @@ class LifecycleControllerTest extends TestCase
             $shop,
             new ActionSource('https://shop.com', '2.0.0'),
             'shopware.service.updated',
-            ['appVersion' => '2.0.0', 'appHash' => 'aabbcc'],
+            ['appVersion' => '2.0.0-aabbcc'],
             new \DateTimeImmutable(),
         );
 

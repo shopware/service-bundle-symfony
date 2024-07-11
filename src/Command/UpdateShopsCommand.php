@@ -11,7 +11,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'services:update-shops',
-    description: 'Add a short description for your command',
+    description: 'Inform all shops about the latest app version.',
 )]
 class UpdateShopsCommand extends Command
 {
@@ -24,7 +24,7 @@ class UpdateShopsCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->success('Updating all shops with the latest manifest');
+        $io->success('Updating all shops with the latest app');
 
         $this->shopUpdater->execute();
 

@@ -11,8 +11,8 @@ readonly class ShopUpdatedHandler
 {
     public function __construct(private ShopUpdater $shopUpdater) {}
 
-    public function __invoke(ShopUpdated $updateShopManifestMessage): void
+    public function __invoke(ShopUpdated $shopUpdatedMessage): void
     {
-        $this->shopUpdater->run($updateShopManifestMessage->shopId, $updateShopManifestMessage->toVersion);
+        $this->shopUpdater->run($shopUpdatedMessage->shopId, $shopUpdatedMessage->toVersion);
     }
 }
