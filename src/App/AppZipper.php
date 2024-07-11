@@ -4,6 +4,7 @@ namespace Shopware\ServiceBundle\App;
 
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\Filesystem\Path;
 use ZipArchive;
 
 class AppZipper
@@ -11,10 +12,12 @@ class AppZipper
     public function zip(App $app): string
     {
         $zip = new ZipArchive();
-        $tempFile = tempnam(sys_get_temp_dir(), 'zip');
 
-        if ($tempFile === false) {
-            throw new \RuntimeException('Could not create temp file');
+        $tempDir  = (string) realpath(sys_get_temp_dir());
+        $tempFile = Path::join($tempDir, bin2hex(random_bytes(8))) . '.zip';
+
+        while (file_exists($tempFile)) {
+            $tempFile = Path::join($tempDir, bin2hex(random_bytes(8))) . '.zip';
         }
 
         if ($zip->open($tempFile, ZipArchive::CREATE) !== true) {

@@ -11,8 +11,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class UpdateAllShops
 {
     public function __construct(
-        private readonly ManagerRegistry     $registry,
-        private readonly AppSelector         $manifestSelector,
+        private readonly ManagerRegistry $registry,
+        private readonly AppSelector $appSelector,
         private readonly MessageBusInterface $messageBus,
     ) {}
 
@@ -22,10 +22,10 @@ class UpdateAllShops
             /** @var string $shopVersion */
             $shopVersion = $shop->shopVersion;
 
-            $manifest = $this->manifestSelector->select($shopVersion);
+            $app = $this->appSelector->select($shopVersion);
 
-            if ($shop->selectedAppHash === null || $manifest->hash !== $shop->selectedAppHash) {
-                //if the manifest hash is not set, lets send the most applicable manifest
+            if ($shop->selectedAppHash === null || $app->hash !== $shop->selectedAppHash) {
+                //if the app hash is not set, lets send the most applicable app
                 //if it's set but the corresponding file hash is different, it means it's been updated,
                 //so we send the latest version
                 $this->messageBus->dispatch(new ShopUpdated($shop->getShopId(), $shopVersion));

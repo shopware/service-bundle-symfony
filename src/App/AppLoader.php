@@ -56,7 +56,7 @@ class AppLoader
             throw new \RuntimeException('Could not find manifest.xml');
         }
 
-        $xml = simplexml_load_string((string) file_get_contents($path));
+        $xml = @simplexml_load_string((string) file_get_contents($path));
 
         if ($xml === false) {
             throw new \RuntimeException('Could not parse manifest.xml');

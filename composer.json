@@ -28,7 +28,8 @@
         "symfony/messenger": "^7.0",
         "symfony/finder": "*",
         "ext-simplexml": "*",
-        "ext-zip": "*"
+        "ext-zip": "*",
+        "psr/log": "^3.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.16",
