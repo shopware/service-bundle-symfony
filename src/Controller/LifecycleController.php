@@ -29,8 +29,8 @@ class LifecycleController
         private readonly AppZipper $appZipper,
     ) {}
 
-    #[Route('/service/lifecycle/choose-app', name: 'api.lifecycle.choose-app', methods: ['GET'])]
-    public function chooseApp(#[MapQueryParameter] string $shopwareVersion): Response
+    #[Route('/service/lifecycle/select-app', name: 'api.lifecycle.select-app', methods: ['GET'])]
+    public function selectApp(#[MapQueryParameter] string $shopwareVersion): Response
     {
         $app = $this->appSelector->select($shopwareVersion);
 
@@ -81,11 +81,12 @@ class LifecycleController
     public function serviceUpdateFinished(WebhookAction $request): Response
     {
         $version = $request->payload['appVersion'] ?? null;
-        $hash = $request->payload['appHash'] ?? null;
 
-        if (!is_string($version) || !is_string($hash)) {
+        if (!is_string($version)) {
             return new Response(null, 422);
         }
+
+        [$version, $hash] = explode('-', $version, 2);
 
         $this->logger->info(sprintf('Service was updated for shop: "%s"', $request->shop->getShopId()), $request->payload);
         /** @var Shop $shop */

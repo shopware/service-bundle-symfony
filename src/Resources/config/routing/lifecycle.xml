@@ -3,6 +3,13 @@
 <routes xmlns="http://symfony.com/schema/routing"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing https://symfony.com/schema/routing/routing-1.0.xsd">
+    <route id="shopware_service_lifecycle_select_app" path="/service/lifecycle/select-app" methods="GET">
+        <default key="_controller">\Shopware\ServiceBundle\Controller\LifecycleController::selectApp</default>
+    </route>
+
+    <route id="shopware_service_lifecycle_app_zip" path="/service/lifecycle/app-zip/{version}" methods="GET">
+        <default key="_controller">\Shopware\ServiceBundle\Controller\LifecycleController::getAppZip</default>
+    </route>
 
     <route id="shopware_service_lifecycle_update" path="/service/lifecycle/report-update" methods="POST">
         <default key="_controller">\Shopware\ServiceBundle\Controller\LifecycleController::reportUpdate</default>
@@ -10,9 +17,5 @@
 
     <route id="shopware_service_lifecycle_service_update_finished" path="/service/lifecycle/service-update-finished" methods="POST">
         <default key="_controller">\Shopware\ServiceBundle\Controller\LifecycleController::serviceUpdateFinished</default>
-    </route>
-
-    <route id="shopware_service_lifecycle_app_zip" path="/service/lifecycle/app-zip/{version}" methods="GET">
-        <default key="_controller">\Shopware\ServiceBundle\Controller\LifecycleController::getAppZip</default>
     </route>
 </routes>
