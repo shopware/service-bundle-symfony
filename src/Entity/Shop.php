@@ -9,12 +9,12 @@ use Shopware\AppBundle\Entity\AbstractShop;
 #[Entity]
 class Shop extends AbstractShop
 {
-    #[Column(type: 'string')]
+    #[Column(type: 'string', nullable: true)]
     public ?string $shopVersion = null;
 
-    #[Column(type: 'string')]
+    #[Column(type: 'string', nullable: true)]
     public ?string $selectedAppVersion = null;
 
-    #[Column(type: 'string')]
+    #[Column(type: 'string', nullable: true)]
     public ?string $selectedAppHash = null;
 }
