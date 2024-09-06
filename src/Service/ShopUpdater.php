@@ -30,6 +30,9 @@ class ShopUpdater
             throw new \RuntimeException(sprintf('Shop with id "%s" not found', $shopId));
         }
 
+        $shop->shopVersion = $toVersion;
+        $this->shopRepository->updateShop($shop);
+
         $app = $this->appSelector->select($toVersion);
 
         if (!$this->isNewUpdateAvailable($shop, $app)) {
