@@ -10,6 +10,7 @@ use Shopware\App\SDK\Context\Webhook\WebhookAction;
 use Shopware\ServiceBundle\App\App;
 use Shopware\ServiceBundle\App\AppSelector;
 use Shopware\ServiceBundle\App\AppZipper;
+use Shopware\ServiceBundle\App\NoSupportedAppException;
 use Shopware\ServiceBundle\Controller\LifecycleController;
 use PHPUnit\Framework\TestCase;
 use Shopware\ServiceBundle\Entity\Shop;
@@ -25,6 +26,44 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 #[CoversClass(App::class)]
 class LifecycleControllerTest extends TestCase
 {
+    public function testSelectAppWithUnsupportedPlatformVersion(): void
+    {
+        $appSelector = $this->createMock(AppSelector::class);
+
+        $controller = new LifecycleController(
+            $this->createMock(MessageBusInterface::class),
+            $this->createMock(LoggerInterface::class),
+            $appSelector,
+            $this->createMock(ShopUpdater::class),
+            $this->createMock(UrlGeneratorInterface::class),
+            $this->createMock(AppZipper::class),
+        );
+
+        $appSelector->expects(static::once())
+            ->method('select')
+            ->with('6.6.0.0')
+            ->willThrowException(new NoSupportedAppException());
+
+        $response = $controller->selectApp('6.6.0.0');
+
+        static::assertEquals(404, $response->getStatusCode());
+        static::assertInstanceOf(JsonResponse::class, $response);
+
+        $data = json_decode((string) $response->getContent(), true);
+
+        static::assertIsArray($data);
+        static::assertArrayHasKey('errors', $data);
+
+        static::assertSame(
+            [
+                'type' => 'unsupported_platform_version',
+                'detail' => 'No supported app version for Shopware platform version "6.6.0.0"',
+                'available_versions' => [],
+            ],
+            $data['errors'],
+        );
+    }
+
     public function testSelectAppSelectAppropriateAppVersionAndReturnsInfo(): void
     {
         $appSelector = $this->createMock(AppSelector::class);
@@ -64,6 +103,44 @@ class LifecycleControllerTest extends TestCase
         static::assertSame('6.6.0.0-aabbcc', $data['app-revision']);
         static::assertSame('aabbcc', $data['app-hash']);
         static::assertSame('/download/link/for/app', $data['app-zip-url']);
+    }
+
+    public function testGetAppZipWithUnknownAppVersion(): void
+    {
+        $appSelector = $this->createMock(AppSelector::class);
+
+        $controller = new LifecycleController(
+            $this->createMock(MessageBusInterface::class),
+            $this->createMock(LoggerInterface::class),
+            $appSelector,
+            $this->createMock(ShopUpdater::class),
+            $this->createMock(UrlGeneratorInterface::class),
+            $this->createMock(AppZipper::class),
+        );
+
+        $appSelector->expects(static::once())
+            ->method('specific')
+            ->with('6.6.0.0')
+            ->willThrowException(new NoSupportedAppException());
+
+        $response = $controller->getAppZip('6.6.0.0');
+
+        static::assertEquals(404, $response->getStatusCode());
+        static::assertInstanceOf(JsonResponse::class, $response);
+
+        $data = json_decode((string) $response->getContent(), true);
+
+        static::assertIsArray($data);
+        static::assertArrayHasKey('errors', $data);
+
+        static::assertSame(
+            [
+                'type' => 'unknown_app_version',
+                'detail' => 'App with version "6.6.0.0" does not exist',
+                'available_versions' => [],
+            ],
+            $data['errors'],
+        );
     }
 
     public function testGetAppZipReturnsDownloadResponse(): void
