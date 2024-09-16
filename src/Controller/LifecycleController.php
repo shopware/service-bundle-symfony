@@ -3,8 +3,10 @@
 namespace Shopware\ServiceBundle\Controller;
 
 use Psr\Log\LoggerInterface;
+use Shopware\ServiceBundle\App\App;
 use Shopware\ServiceBundle\App\AppSelector;
 use Shopware\ServiceBundle\App\AppZipper;
+use Shopware\ServiceBundle\App\NoSupportedAppException;
 use Shopware\ServiceBundle\Entity\Shop;
 use Shopware\ServiceBundle\Message\ShopUpdated;
 use Shopware\ServiceBundle\Service\ShopUpdater;
@@ -32,7 +34,19 @@ class LifecycleController
     #[Route('/service/lifecycle/select-app', name: 'api.lifecycle.select-app', methods: ['GET'])]
     public function selectApp(#[MapQueryParameter] string $shopwareVersion): Response
     {
-        $app = $this->appSelector->select($shopwareVersion);
+        try {
+            $app = $this->appSelector->select($shopwareVersion);
+        } catch (NoSupportedAppException) {
+            $data = [
+                'errors' => [
+                    'type' => 'unsupported_platform_version',
+                    'detail' => sprintf('No supported app version for Shopware platform version "%s"', $shopwareVersion),
+                    'available_versions' => array_map(fn(App $app) => $app->version, $this->appSelector->all()),
+                ],
+            ];
+
+            return new JsonResponse($data, Response::HTTP_NOT_FOUND);
+        }
 
         return new JsonResponse([
             'app-version' => $app->version,
@@ -45,7 +59,19 @@ class LifecycleController
     #[Route('/service/lifecycle/app-zip/{version}', name: 'api.lifecycle.app-zip', methods: ['GET'], requirements: ['version' => '\d/.\d/.\d/.\d'])]
     public function getAppZip(string $version): Response
     {
-        $app = $this->appSelector->specific($version);
+        try {
+            $app = $this->appSelector->specific($version);
+        } catch (NoSupportedAppException) {
+            $data = [
+                'errors' => [
+                    'type' => 'unknown_app_version',
+                    'detail' => sprintf('App with version "%s" does not exist', $version),
+                    'available_versions' => array_map(fn(App $app) => $app->version, $this->appSelector->all()),
+                ],
+            ];
+
+            return new JsonResponse($data, Response::HTTP_NOT_FOUND);
+        }
 
         $zipContent = $this->appZipper->zip($app);
 

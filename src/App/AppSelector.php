@@ -40,4 +40,12 @@ class AppSelector
 
         throw NoSupportedAppException::fromAppVersion($appVersion);
     }
+
+    /**
+     * @return array<App>
+     */
+    public function all(): array
+    {
+        return $this->appLoader->load();
+    }
 }

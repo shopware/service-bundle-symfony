@@ -24,7 +24,7 @@ class AppSelectorTest extends TestCase
     private function getAppLoaderMock(): AppLoader&MockObject
     {
         $loader = static::createMock(AppLoader::class);
-        $loader->expects(static::once())->method('load')->willReturn([
+        $loader->expects(static::any())->method('load')->willReturn([
             new App('/6.6.0.0', 'MyCoolService', '6.6.0.0', 'hash1'),
             new App('/6.6.6.0', 'MyCoolService', '6.6.6.0', 'hash2'),
             new App('/6.7.0.0', 'MyCoolService', '6.7.0.0', 'hash3'),
@@ -85,5 +85,13 @@ class AppSelectorTest extends TestCase
         $app = $selector->specific('6.6.0.0');
 
         static::assertSame('6.6.0.0', $app->version);
+    }
+
+    public function testAll(): void
+    {
+        $loader = $this->getAppLoaderMock();
+        $selector = new AppSelector($loader);
+
+        static::assertSame($loader->load(), $selector->all());
     }
 }
