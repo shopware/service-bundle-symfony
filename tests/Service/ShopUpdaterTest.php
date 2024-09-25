@@ -154,7 +154,7 @@ class ShopUpdaterTest extends TestCase
     public function testMarkShopAsUpdated(): void
     {
         $shop = new Shop('my-shop-id', 'https://shop.com', 'secret');
-        $shop->shopVersion = '6.6.0.0';
+        $shop->shopVersion = '6.7.0.0';
         $shop->selectedAppVersion = '6.6.0.0';
         $shop->selectedAppHash = 'aabbccdd';
 

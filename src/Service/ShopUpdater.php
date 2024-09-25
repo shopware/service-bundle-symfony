@@ -58,7 +58,6 @@ class ShopUpdater
 
     public function markShopUpdated(Shop $shop, string $version, string $hash): void
     {
-        $shop->shopVersion = $version;
         $shop->selectedAppVersion = $version;
         $shop->selectedAppHash = $hash;
 
