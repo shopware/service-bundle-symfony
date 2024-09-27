@@ -55,6 +55,7 @@ class UpdateAllShopsTest extends TestCase
         $shop = new Shop('my-shop-id', 'https://shop.com', 'secret');
         $shop->shopVersion = '1.0.0';
         $shop->selectedAppHash = 'aabbcc';
+        $shop->setShopActive(true);
 
         $matcher = static::exactly(2);
         $this->shopRepository->expects($matcher)
@@ -110,10 +111,40 @@ class UpdateAllShopsTest extends TestCase
         $this->service->execute();
     }
 
+    public function testMessageIsNotDispatchedForInactiveShop(): void
+    {
+        $shop = new Shop('my-shop-id', 'https://shop.com', 'secret');
+        $shop->shopVersion = '1.0.0';
+        $shop->selectedAppHash = 'aabbcc';
+        $shop->setShopActive(false);
+
+        $matcher = static::exactly(2);
+        $this->shopRepository->expects($matcher)
+            ->method('findBy')
+            ->willReturnCallback(function () use ($matcher, $shop) {
+                return match ($matcher->numberOfInvocations()) {
+                    1 => [$shop],
+                    2 => [],
+                    default => null,
+                };
+            });
+
+        $this->appSelector->method('select')
+            ->with('1.0.0')
+            ->willReturn(new App('/my/app', 'MyApp', '1.0.0', 'aabbdd'));
+
+        $this->messageBus
+            ->expects($this->never())
+            ->method('dispatch');
+
+        $this->service->execute();
+    }
+
     public function testMessageIsDispatchedForShopWithNoHashSet(): void
     {
         $shop = new Shop('my-shop-id', 'https://shop.com', 'secret');
         $shop->shopVersion = '1.0.0';
+        $shop->setShopActive(true);
 
         $matcher = static::exactly(2);
         $this->shopRepository->expects($matcher)
