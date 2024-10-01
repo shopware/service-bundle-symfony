@@ -41,6 +41,17 @@ class AppSelector
         throw NoSupportedAppException::fromAppVersion($appVersion);
     }
 
+    public function hasVersion(string $appVersion): bool
+    {
+        foreach ($this->appLoader->load() as $app) {
+            if ($app->version === $appVersion) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @return array<App>
      */

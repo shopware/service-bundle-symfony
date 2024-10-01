@@ -3,6 +3,7 @@
 namespace Shopware\ServiceBundle\Service;
 
 use Doctrine\Persistence\ManagerRegistry;
+use Shopware\ServiceBundle\App\NoSupportedAppException;
 use Shopware\ServiceBundle\Entity\Shop;
 use Shopware\ServiceBundle\App\AppSelector;
 use Shopware\ServiceBundle\Message\ShopUpdated;
@@ -19,10 +20,19 @@ class UpdateAllShops
     public function execute(): void
     {
         foreach ($this->findAll() as $shop) {
+            if (!$shop->isShopActive()) {
+                continue;
+            }
+
             /** @var string $shopVersion */
             $shopVersion = $shop->shopVersion;
 
-            $app = $this->appSelector->select($shopVersion);
+            try {
+                $app = $this->appSelector->select($shopVersion);
+            } catch (NoSupportedAppException $e) {
+                //app was deleted and no new version is available for shopware version
+                continue;
+            }
 
             if ($shop->selectedAppHash === null || $app->hash !== $shop->selectedAppHash) {
                 //if the app hash is not set, lets send the most applicable app

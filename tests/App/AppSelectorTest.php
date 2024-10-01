@@ -94,4 +94,13 @@ class AppSelectorTest extends TestCase
 
         static::assertSame($loader->load(), $selector->all());
     }
+
+    public function testHas(): void
+    {
+        $loader = $this->getAppLoaderMock();
+        $selector = new AppSelector($loader);
+
+        static::assertTrue($selector->hasVersion('6.6.0.0'));
+        static::assertFalse($selector->hasVersion('6.6.0.1'));
+    }
 }
