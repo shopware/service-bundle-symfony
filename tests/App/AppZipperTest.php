@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Shopware\ServiceBundle\App\App;
 use Shopware\ServiceBundle\App\AppZipper;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use ZipArchive;
@@ -19,13 +20,18 @@ class AppZipperTest extends TestCase
 
     public function setUp(): void
     {
-        $this->tempDir = Path::join((string) realpath(sys_get_temp_dir()), $this->name());
+        $this->tempDir = Path::join((string) realpath(sys_get_temp_dir()), $this->name(), 'temp');
         $this->fs = new Filesystem();
     }
 
     public function testAppZipperAddsAllFiles(): void
     {
-        $zipper = new AppZipper();
+        $cache = static::createMock(FilesystemAdapter::class);
+        $cache->expects(static::any())
+            ->method('get')
+            ->willReturnCallback(fn(string $id, callable $cb) => $cb());
+
+        $zipper = new AppZipper($cache);
 
         $this->fs->mkdir($this->tempDir . '/app');
         $this->fs->touch($this->tempDir . '/app/file1');
@@ -33,9 +39,10 @@ class AppZipperTest extends TestCase
         $this->fs->mkdir($this->tempDir . '/app/folder');
         $this->fs->touch($this->tempDir . '/app/folder/file3');
 
-        $app = new App($this->tempDir . '/app', 'MyCoolService', '6.6.0.0', 'hash');
+        $app = new App($this->tempDir . '/app', 'MyCoolService', '6.6.0.0', 'aabbccdd');
 
         $zipContent = $zipper->zip($app);
+
 
         $this->fs->dumpFile($this->tempDir . '/app.zip', $zipContent);
 
@@ -48,7 +55,6 @@ class AppZipperTest extends TestCase
         );
 
         sort($names);
-        ;
 
         static::assertEquals(
             [
