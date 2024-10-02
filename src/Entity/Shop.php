@@ -17,4 +17,7 @@ class Shop extends AbstractShop
 
     #[Column(type: 'string', nullable: true)]
     public ?string $selectedAppHash = null;
+
+    #[Column(type: 'string', nullable: true)]
+    public ?string $commercialLicenseKey = null;
 }
