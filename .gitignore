@@ -9,3 +9,4 @@
 # Devenv
 .devenv*
 devenv.local.nix
+.idea/
