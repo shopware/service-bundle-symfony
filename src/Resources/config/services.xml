@@ -13,5 +13,13 @@
         <service id="Shopware\ServiceBundle\App\AppLoader">
             <argument></argument>
         </service>
+
+        <service id="app.zip.cache" parent="cache.adapter.filesystem">
+            <argument>%kernel.cache_dir%/zips</argument>
+        </service>
+
+        <service id="Shopware\ServiceBundle\App\AppZipper">
+            <argument type="service" id="app.zip.cache"/>
+        </service>
     </services>
 </container>
