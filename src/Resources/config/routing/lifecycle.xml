@@ -18,4 +18,8 @@
     <route id="shopware_service_lifecycle_service_update_finished" path="/service/lifecycle/service-update-finished" methods="POST">
         <default key="_controller">\Shopware\ServiceBundle\Controller\LifecycleController::serviceUpdateFinished</default>
     </route>
+
+    <route id="shopware_service_license_sync" path="/service/license/commercial/sync" methods="POST">
+        <default key="_controller">\Shopware\ServiceBundle\Controller\LicenseController::sync</default>
+    </route>
 </routes>
