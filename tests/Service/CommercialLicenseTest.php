@@ -20,7 +20,7 @@ class CommercialLicenseTest extends TestCase
     public function testValidateWithValidLicenseKey(): void
     {
         $commercialLicense = new CommercialLicense();
-        $info = $commercialLicense->validate('http://localhost', self::LICENSE_KEY);
+        $info = $commercialLicense->validate(self::LICENSE_KEY);
 
         $this->assertInstanceOf(LicenseInfo::class, $info);
 
@@ -40,27 +40,7 @@ class CommercialLicenseTest extends TestCase
 
         $commercialLicense = new CommercialLicense();
 
-        $commercialLicense->validate('https://shop.com', 'invalid_license_key');
-    }
-
-    public function testValidateWithInvalidDomain(): void
-    {
-        $commercialLicense = new CommercialLicense();
-
-        $this->expectException(LicenseException::class);
-        $this->expectExceptionMessage('License domain not valid: invalid.com');
-
-        $commercialLicense->validate('https://invalid.com', self::LICENSE_KEY);
-    }
-
-    public function testValidateWithEmptyDomain(): void
-    {
-        $commercialLicense = new CommercialLicense();
-
-        $this->expectException(LicenseException::class);
-        $this->expectExceptionMessage('License domain not provided');
-
-        $commercialLicense->validate('', self::LICENSE_KEY);
+        $commercialLicense->validate('invalid_license_key');
     }
 
     public function testValidateNotProviderLicenseKey(): void
@@ -70,6 +50,6 @@ class CommercialLicenseTest extends TestCase
         $this->expectException(LicenseException::class);
         $this->expectExceptionMessage('License key not provided');
 
-        $commercialLicense->validate('https://shop.com', '');
+        $commercialLicense->validate('');
     }
 }

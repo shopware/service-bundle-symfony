@@ -39,7 +39,7 @@ class LicenseControllerTest extends TestCase
         $request = $this->createMock(Request::class);
         $request->method('getPayload')->willReturn(new InputBag(['licenseKey' => 'valid_key']));
 
-        $this->commercialLicense->expects($this->once())->method('validate')->with($shop->getShopUrl(), 'valid_key');
+        $this->commercialLicense->expects($this->once())->method('validate')->with('valid_key');
 
         $licenseController = new LicenseController($shopRepository, $this->commercialLicense);
 
@@ -119,7 +119,7 @@ class LicenseControllerTest extends TestCase
         $request = $this->createMock(Request::class);
         $request->method('getPayload')->willReturn(new InputBag(['licenseKey' => 'valid_key']));
 
-        $this->commercialLicense->expects($this->once())->method('validate')->with($shop->getShopUrl(), 'valid_key');
+        $this->commercialLicense->expects($this->once())->method('validate')->with('valid_key');
 
         $licenseController = new LicenseController($shopRepository, $this->commercialLicense);
 

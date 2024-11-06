@@ -26,14 +26,4 @@ class LicenseException extends \Exception
     {
         return new self('License key not provided', self::ERROR_LICENSE_INVALID);
     }
-
-    public static function domainInvalid(string $domain): self
-    {
-        return new self(sprintf('License domain not valid: %s', $domain), self::ERROR_LICENSE_INVALID);
-    }
-
-    public static function domainNotProvided(): self
-    {
-        return new self('License domain not provided', self::ERROR_LICENSE_INVALID);
-    }
 }
