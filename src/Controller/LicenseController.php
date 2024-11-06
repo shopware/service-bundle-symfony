@@ -46,7 +46,7 @@ class LicenseController
         }
 
         try {
-            $this->commercialLicense->validate($shop->getShopUrl(), $licenseKey);
+            $this->commercialLicense->validate($licenseKey);
         } catch (LicenseException $e) {
             $data = [
                 'errors' => [

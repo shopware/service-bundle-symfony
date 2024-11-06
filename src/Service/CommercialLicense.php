@@ -7,7 +7,6 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha512;
 use Lcobucci\JWT\UnencryptedToken;
-use Lcobucci\JWT\Validation\Constraint\PermittedFor;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Constraint\StrictValidAt;
 use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
@@ -15,17 +14,10 @@ use Shopware\ServiceBundle\Exception\LicenseException;
 
 class CommercialLicense
 {
-    public function validate(string $shopUrl, string $licenseKey): LicenseInfo
+    public function validate(string $licenseKey): LicenseInfo
     {
         if (!$licenseKey) {
             throw LicenseException::licenseNotProvided();
-        }
-
-        $shopUrl = parse_url($shopUrl);
-        $domain = $shopUrl['host'] ?? null;
-
-        if (!$domain) {
-            throw LicenseException::domainNotProvided();
         }
 
         try {
@@ -48,15 +40,6 @@ class CommercialLicense
             );
         } catch (RequiredConstraintsViolated) {
             throw LicenseException::licenseExpired($licenseKey);
-        }
-
-        try {
-            $jwt->validator()->assert(
-                $token,
-                new PermittedFor($domain),
-            );
-        } catch (RequiredConstraintsViolated) {
-            throw LicenseException::domainInvalid($domain);
         }
 
         $jwt->validator()->assert(
