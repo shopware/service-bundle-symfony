@@ -28,6 +28,28 @@ class LicenseControllerTest extends TestCase
         $this->commercialLicense = $this->createMock(CommercialLicense::class);
     }
 
+    public function testSyncWithValidLicenseHost(): void
+    {
+        $shop = new Shop('my-shop-id', 'https://shop.com', 'secret');
+
+        /** @var ShopRepositoryInterface<Shop> $shopRepository */
+        $shopRepository = new MockShopRepository();
+        $shopRepository->createShop($shop);
+
+        $request = $this->createMock(Request::class);
+        $request->method('getPayload')->willReturn(new InputBag(['licenseHost' => 'valid_host']));
+
+        $this->commercialLicense->expects($this->never())->method('validate');
+
+        $licenseController = new LicenseController($shopRepository, $this->commercialLicense);
+
+        $response = $licenseController->sync($shop, $request);
+
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+        $this->assertEmpty($response->getContent());
+    }
+
     public function testSyncWithValidLicenseKey(): void
     {
         $shop = new Shop('my-shop-id', 'https://shop.com', 'secret');
@@ -50,7 +72,29 @@ class LicenseControllerTest extends TestCase
         $this->assertEmpty($response->getContent());
     }
 
-    public function testSyncWithMissingLicenseKey(): void
+    public function testSyncWithValidCredentials(): void
+    {
+        $shop = new Shop('my-shop-id', 'https://shop.com', 'secret');
+
+        /** @var ShopRepositoryInterface<Shop> $shopRepository */
+        $shopRepository = new MockShopRepository();
+        $shopRepository->createShop($shop);
+
+        $request = $this->createMock(Request::class);
+        $request->method('getPayload')->willReturn(new InputBag(['licenseKey' => 'valid_key', 'licenseHost' => 'valid_host']));
+
+        $this->commercialLicense->expects($this->once())->method('validate')->with('valid_key');
+
+        $licenseController = new LicenseController($shopRepository, $this->commercialLicense);
+
+        $response = $licenseController->sync($shop, $request);
+
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+        $this->assertEmpty($response->getContent());
+    }
+
+    public function testSyncWithInValidCredentials(): void
     {
         $shop = new Shop('my-shop-id', 'https://shop.com', 'secret');
 
@@ -74,8 +118,8 @@ class LicenseControllerTest extends TestCase
         $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertEquals([
             'errors' => [
-                'type' => 'missing_license_key',
-                'detail' => 'No license key provided',
+                'type' => 'missing_license_credentials',
+                'detail' => 'No licenseKey and licenseHost provided',
             ],
         ], $decodedContent);
     }
@@ -134,7 +178,7 @@ class LicenseControllerTest extends TestCase
         $this->assertEquals([
             'errors' => [
                 'type' => 'shop_update_license_failed',
-                'detail' => 'Failed to sync commercial license to shop',
+                'detail' => 'Shop with id "my-shop-id-1" not found',
             ],
         ], $decodedContent);
     }

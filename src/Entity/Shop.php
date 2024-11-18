@@ -20,4 +20,7 @@ class Shop extends AbstractShop
 
     #[Column(type: 'string', nullable: true)]
     public ?string $commercialLicenseKey = null;
+
+    #[Column(type: 'string', nullable: true)]
+    public ?string $commercialLicenseHost = null;
 }

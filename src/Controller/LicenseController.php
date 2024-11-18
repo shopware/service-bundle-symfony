@@ -32,47 +32,41 @@ class LicenseController
     {
         $payload = $request->getPayload()->all();
 
-        $licenseKey = $payload['licenseKey'] ?? null;
-
-        if (!$licenseKey) {
-            $data = [
-                'errors' => [
-                    'type' => 'missing_license_key',
-                    'detail' => 'No license key provided',
-                ],
-            ];
-
-            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+        if (!isset($payload['licenseKey']) && !isset($payload['licenseHost'])) {
+            return $this->createErrorResponse('missing_license_credentials', 'No licenseKey and licenseHost provided', Response::HTTP_BAD_REQUEST);
         }
 
-        try {
-            $this->commercialLicense->validate($licenseKey);
-        } catch (LicenseException $e) {
-            $data = [
-                'errors' => [
-                    'type' => 'license_validation_failed',
-                    'detail' => $e->getMessage(),
-                ],
-            ];
+        $licenseKey = $payload['licenseKey'] ?? '';
+        $licenseHost = $payload['licenseHost'] ?? '';
 
-            return new JsonResponse($data, Response::HTTP_FORBIDDEN);
+        if ($licenseKey !== '') {
+            try {
+                $this->commercialLicense->validate($licenseKey);
+                $shop->commercialLicenseKey = $licenseKey;
+            } catch (LicenseException $e) {
+                return $this->createErrorResponse('license_validation_failed', $e->getMessage(), Response::HTTP_FORBIDDEN);
+            }
         }
 
-        $shop->commercialLicenseKey = $licenseKey;
+        $shop->commercialLicenseHost = $licenseHost;
 
         try {
             $this->shopRepository->updateShop($shop);
-        } catch (\Throwable) {
-            $data = [
-                'errors' => [
-                    'type' => 'shop_update_license_failed',
-                    'detail' => 'Failed to sync commercial license to shop',
-                ],
-            ];
-
-            return new JsonResponse($data, Response::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (\Throwable $e) {
+            return $this->createErrorResponse('shop_update_license_failed', $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    private function createErrorResponse(string $type, string $detail, int $statusCode): JsonResponse
+    {
+        $data = [
+            'errors' => [
+                'type' => $type,
+                'detail' => $detail,
+            ],
+        ];
+        return new JsonResponse($data, $statusCode);
     }
 }
