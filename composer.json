@@ -24,7 +24,7 @@
         "symfony/psr-http-message-bridge": "2.* || ^7.0",
         "symfony/routing": "^6.2 || ^6.3 || ^6.4 || ^7.0",
         "doctrine/orm": "^2.11",
-        "shopware/app-bundle": "^2.0",
+        "shopware/app-bundle": "^4.0",
         "symfony/messenger": "^7.0",
         "symfony/finder": "*",
         "ext-simplexml": "*",
