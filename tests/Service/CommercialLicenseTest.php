@@ -24,13 +24,19 @@ class CommercialLicenseTest extends TestCase
 
         $this->assertInstanceOf(LicenseInfo::class, $info);
 
-        $this->assertEquals('localhost', $info->licenseDomain);
+        $this->assertSame('localhost', $info->licenseDomain);
 
         $expected = (new \DateTimeImmutable("2022-06-22 06:56:20"))->format('Y-m-d H:i:s');
-        $this->assertEquals($expected, $info->issuedAt->format('Y-m-d H:i:s'));
+        $this->assertSame($expected, $info->issuedAt->format('Y-m-d H:i:s'));
 
         $expected = (new \DateTimeImmutable("2999-12-31 23:00:00"))->format('Y-m-d H:i:s');
-        $this->assertEquals($expected, $info->expiresAt->format('Y-m-d H:i:s'));
+        $this->assertSame($expected, $info->expiresAt->format('Y-m-d H:i:s'));
+
+        $this->assertSame([
+            '000001' => true,
+            '000002' => false,
+            '000003' => true,
+        ], $info->toggles);
     }
 
     public function testValidateWithInvalidLicenseKey(): void

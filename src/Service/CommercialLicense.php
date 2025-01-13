@@ -56,10 +56,14 @@ class CommercialLicense
         /** @var \DateTimeImmutable $exp */
         $exp = $token->claims()->get('exp');
 
+        /** @var array<string, string|int|bool> $toggles */
+        $toggles = $token->claims()->get('license-toggles') ?? [];
+
         return new LicenseInfo(
             $audience[0],
             $issuedAt,
             $exp,
+            $toggles,
         );
     }
 
