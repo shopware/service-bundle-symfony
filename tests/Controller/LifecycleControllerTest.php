@@ -7,6 +7,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Log\LoggerInterface;
 use Shopware\App\SDK\Context\ActionSource;
 use Shopware\App\SDK\Context\Webhook\WebhookAction;
+use Shopware\App\SDK\Framework\Collection;
 use Shopware\ServiceBundle\App\App;
 use Shopware\ServiceBundle\App\AppSelector;
 use Shopware\ServiceBundle\App\AppZipper;
@@ -211,7 +212,7 @@ class LifecycleControllerTest extends TestCase
 
         $request = new WebhookAction(
             $shop,
-            new ActionSource('https://shop.com', '2.0.0'),
+            new ActionSource('https://shop.com', '2.0.0', new Collection()),
             'shopware.updated',
             [],
             new \DateTimeImmutable(),
@@ -252,7 +253,7 @@ class LifecycleControllerTest extends TestCase
 
         $request = new WebhookAction(
             $shop,
-            new ActionSource('https://shop.com', '2.0.0'),
+            new ActionSource('https://shop.com', '2.0.0', new Collection()),
             'shopware.updated',
             [
                 'newVersion' => '6.7.0.0',
@@ -306,7 +307,7 @@ class LifecycleControllerTest extends TestCase
 
         $request = new WebhookAction(
             $shop,
-            new ActionSource('https://shop.com', '2.0.0'),
+            new ActionSource('https://shop.com', '2.0.0', new Collection()),
             'shop.service.updated',
             $payload,
             new \DateTimeImmutable(),
@@ -343,7 +344,7 @@ class LifecycleControllerTest extends TestCase
 
         $request = new WebhookAction(
             $shop,
-            new ActionSource('https://shop.com', '2.0.0'),
+            new ActionSource('https://shop.com', '2.0.0', new Collection()),
             'shopware.service.updated',
             ['appVersion' => '2.0.0-aabbcc'],
             new \DateTimeImmutable(),
