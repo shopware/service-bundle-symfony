@@ -12,5 +12,8 @@ class LicenseInfo
         public readonly DateTimeImmutable $issuedAt,
         public readonly DateTimeImmutable $expiresAt,
         public readonly array             $toggles,
+        public readonly ?string           $planName = null,
+        public readonly ?string           $planVariant = null,
+        public readonly ?string           $planUsage = null,
     ) {}
 }

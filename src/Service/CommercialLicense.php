@@ -59,11 +59,21 @@ class CommercialLicense
         /** @var array<string, string|int|bool> $toggles */
         $toggles = $token->claims()->get('license-toggles') ?? [];
 
+        /** @var string|null $planName */
+        $planName = $token->claims()->get('plan-name') ?? null;
+        /** @var string|null $planVariant */
+        $planVariant = $token->claims()->get('plan-variant') ?? null;
+        /** @var string|null $planUsage */
+        $planUsage = $token->claims()->get('plan-usage') ?? null;
+
         return new LicenseInfo(
             $audience[0],
             $issuedAt,
             $exp,
             $toggles,
+            $planName,
+            $planVariant,
+            $planUsage,
         );
     }
 
