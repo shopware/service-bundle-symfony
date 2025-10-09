@@ -3,6 +3,7 @@
 namespace Shopware\ServiceBundle\Test\Service;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\ServiceBundle\Exception\LicenseException;
 use Shopware\ServiceBundle\Service\CommercialLicense;
 use PHPUnit\Framework\TestCase;
@@ -16,6 +17,13 @@ use Shopware\ServiceBundle\Service\LicenseInfo;
 class CommercialLicenseTest extends TestCase
 {
     private const LICENSE_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJhdWQiOiJsb2NhbGhvc3QiLCJzdWIiOiJ0ZXN0IiwiZXhwIjozMjUwMzY3NjQwMCwiaWF0IjoxNjU1ODgwOTgwLjg2MTcyNywibmJmIjoxNjU1ODgwOTgwLjg2MTczNCwibGljZW5zZS10b2dnbGVzIjp7IjAwMDAwMSI6dHJ1ZSwiMDAwMDAyIjpmYWxzZSwiMDAwMDAzIjp0cnVlfX0.MVCdyweIzi7PamGhliTMiH1Ipt6sT2TmbH4LK6u5iuaTSAE7_TDYe8YZvUClUcAk7XrtLjhNQ2l88cfzlm5w5j5_IqyOF0LWd2RybjBMU-PxCOCRirapL3QMc5rFdr1NV_AysLYENgQhyzLldE4HfnquSRLcOEFEAimGk8TKPKZJe-ET0cmEZG599tnW87rttZr2Zj8WKjGzXAxhGaCvL6a6UTgs15CjSZoL_uGbuAb4rDD1iumpd9vy3s3utrUa2-CG_by8e5uY57n_prWqMQk5Ug64xP7ZML2GeUzciWvUGo6cmu9CT4WY-kLAW4oO0ADiFWwADe91J2I9xaYiqdB-UGqTdFdfNa8rUUXVO8VHG6SRbNBflxBA8ycTryBjPwiIiOtx2L9hNZuDDQTjgmW15rf4P89lceO8WYqSfVDIjffwTWd7tfcUQ9I3hNnY92QmiCXkf-QU_hXb7weAOXsjcfqOt2aQsg_vk8DBwV7PBPKJ6ceESoHehiwN1hCmVMUQKLlury5BhTYt_ZXITDWro8IxP2UgvonaSXtcGWhJWV-QmsbIlaJPB4c5FyAcGK0BoDsDuDW-_XQwUNyY8VuZFRk5N88Hn_Lnzb2iO1MZR69W4g1W9854-pusnjXii3xrWsekAfRw0lQx5wRT-M2vmdzfuvjO-vwMUUKJl04';
+
+    private MockObject&CommercialLicense $mockCommercialLicense;
+
+    protected function setUp(): void
+    {
+        $this->mockCommercialLicense = $this->createMock(CommercialLicense::class);
+    }
 
     public function testValidateWithValidLicenseKey(): void
     {
@@ -57,5 +65,74 @@ class CommercialLicenseTest extends TestCase
         $this->expectExceptionMessage('License key not provided');
 
         $commercialLicense->validate('');
+    }
+
+    public function testLicenseInfoWithPlanRise(): void
+    {
+        $licenseInfo = new LicenseInfo(
+            licenseDomain: 'test-domain.com',
+            issuedAt: new \DateTimeImmutable('2024-01-01 00:00:00'),
+            expiresAt: new \DateTimeImmutable('2025-01-01 00:00:00'),
+            toggles: ['feature-1' => true],
+            planName: 'rise',
+            planVariant: 'standard',
+            planUsage: 'shop-type-1'
+        );
+
+        $this->mockCommercialLicense->method('validate')
+            ->willReturn($licenseInfo);
+
+        $result = $this->mockCommercialLicense->validate('mock-license-key');
+
+        $this->assertInstanceOf(LicenseInfo::class, $result);
+        $this->assertSame('rise', $result->planName);
+        $this->assertSame('standard', $result->planVariant);
+        $this->assertSame('shop-type-1', $result->planUsage);
+    }
+
+    public function testLicenseInfoWithPlanEvolve(): void
+    {
+        $licenseInfo = new LicenseInfo(
+            licenseDomain: 'test-domain.com',
+            issuedAt: new \DateTimeImmutable('2024-01-01 00:00:00'),
+            expiresAt: new \DateTimeImmutable('2025-01-01 00:00:00'),
+            toggles: ['feature-1' => true, 'feature-2' => false],
+            planName: 'evolve',
+            planVariant: 'standard',
+            planUsage: 'shop-type-2'
+        );
+
+        $this->mockCommercialLicense->method('validate')
+            ->willReturn($licenseInfo);
+
+        $result = $this->mockCommercialLicense->validate('mock-license-key');
+
+        $this->assertInstanceOf(LicenseInfo::class, $result);
+        $this->assertSame('evolve', $result->planName);
+        $this->assertSame('standard', $result->planVariant);
+        $this->assertSame('shop-type-2', $result->planUsage);
+    }
+
+    public function testLicenseInfoWithPlanBeyond(): void
+    {
+        $licenseInfo = new LicenseInfo(
+            licenseDomain: 'test-domain.com',
+            issuedAt: new \DateTimeImmutable('2024-01-01 00:00:00'),
+            expiresAt: new \DateTimeImmutable('2025-01-01 00:00:00'),
+            toggles: ['feature-1' => true, 'feature-2' => true, 'feature-3' => false],
+            planName: 'beyond',
+            planVariant: 'standard',
+            planUsage: 'shop-type-3'
+        );
+
+        $this->mockCommercialLicense->method('validate')
+            ->willReturn($licenseInfo);
+
+        $result = $this->mockCommercialLicense->validate('mock-license-key');
+
+        $this->assertInstanceOf(LicenseInfo::class, $result);
+        $this->assertSame('beyond', $result->planName);
+        $this->assertSame('standard', $result->planVariant);
+        $this->assertSame('shop-type-3', $result->planUsage);
     }
 }
