@@ -76,7 +76,7 @@ class CommercialLicenseTest extends TestCase
             toggles: ['feature-1' => true],
             planName: 'rise',
             planVariant: 'standard',
-            planUsage: 'shop-type-1'
+            planUsage: 'production',
         );
 
         $this->mockCommercialLicense->method('validate')
@@ -87,7 +87,7 @@ class CommercialLicenseTest extends TestCase
         $this->assertInstanceOf(LicenseInfo::class, $result);
         $this->assertSame('rise', $result->planName);
         $this->assertSame('standard', $result->planVariant);
-        $this->assertSame('shop-type-1', $result->planUsage);
+        $this->assertSame('production', $result->planUsage);
     }
 
     public function testLicenseInfoWithPlanEvolve(): void
@@ -99,7 +99,7 @@ class CommercialLicenseTest extends TestCase
             toggles: ['feature-1' => true, 'feature-2' => false],
             planName: 'evolve',
             planVariant: 'standard',
-            planUsage: 'shop-type-2'
+            planUsage: 'production',
         );
 
         $this->mockCommercialLicense->method('validate')
@@ -110,7 +110,7 @@ class CommercialLicenseTest extends TestCase
         $this->assertInstanceOf(LicenseInfo::class, $result);
         $this->assertSame('evolve', $result->planName);
         $this->assertSame('standard', $result->planVariant);
-        $this->assertSame('shop-type-2', $result->planUsage);
+        $this->assertSame('production', $result->planUsage);
     }
 
     public function testLicenseInfoWithPlanBeyond(): void
@@ -122,7 +122,7 @@ class CommercialLicenseTest extends TestCase
             toggles: ['feature-1' => true, 'feature-2' => true, 'feature-3' => false],
             planName: 'beyond',
             planVariant: 'standard',
-            planUsage: 'shop-type-3'
+            planUsage: 'testing',
         );
 
         $this->mockCommercialLicense->method('validate')
@@ -133,6 +133,6 @@ class CommercialLicenseTest extends TestCase
         $this->assertInstanceOf(LicenseInfo::class, $result);
         $this->assertSame('beyond', $result->planName);
         $this->assertSame('standard', $result->planVariant);
-        $this->assertSame('shop-type-3', $result->planUsage);
+        $this->assertSame('testing', $result->planUsage);
     }
 }
