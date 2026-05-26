@@ -305,8 +305,10 @@ class LicenseControllerTest extends TestCase
     {
         yield 'licenseHost is array' => [['licenseKey' => 'valid_key', 'licenseHost' => []]];
         yield 'licenseHost is int' => [['licenseKey' => 'valid_key', 'licenseHost' => 42]];
+        yield 'licenseHost is null' => [['licenseKey' => 'valid_key', 'licenseHost' => null]];
         yield 'licenseKey is array' => [['licenseKey' => [], 'licenseHost' => 'valid_host']];
         yield 'licenseKey is bool' => [['licenseKey' => true, 'licenseHost' => 'valid_host']];
+        yield 'licenseKey is null' => [['licenseKey' => null, 'licenseHost' => 'valid_host']];
     }
 
     /**
