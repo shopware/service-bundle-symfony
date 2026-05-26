@@ -2,6 +2,7 @@
 
 namespace Shopware\ServiceBundle\Controller;
 
+use Shopware\App\SDK\Context\Webhook\WebhookAction;
 use Shopware\App\SDK\Shop\ShopInterface;
 use Shopware\App\SDK\Shop\ShopRepositoryInterface;
 use Shopware\ServiceBundle\Entity\Shop;
@@ -26,6 +27,10 @@ class LicenseController
 
     /**
      * @param Shop $shop
+     *
+     * @deprecated tag:v6.8.0 - Replaced by the `commercial_license.provided` webhook handled by self::provided().
+     *                          The Shopware platform stops pushing to this endpoint once an app declares the
+     *                          new webhook in its manifest. See https://github.com/shopware/shopware/pull/16635.
      */
     #[Route('/service/license/commercial/sync', name: 'service.sync.commercial-license-info', methods: ['POST'])]
     public function sync(ShopInterface $shop, Request $request): Response
@@ -38,6 +43,40 @@ class LicenseController
 
         $licenseKey = is_string($payload['licenseKey'] ?? null) ? $payload['licenseKey'] : '';
         $licenseHost = is_string($payload['licenseHost'] ?? null) ? $payload['licenseHost'] : '';
+
+        if ($licenseKey !== '') {
+            try {
+                $this->commercialLicense->validate($licenseKey);
+                $shop->commercialLicenseKey = $licenseKey;
+            } catch (LicenseException $e) {
+                return $this->createErrorResponse('license_validation_failed', $e->getMessage(), Response::HTTP_FORBIDDEN);
+            }
+        }
+
+        $shop->commercialLicenseHost = $licenseHost;
+
+        try {
+            $this->shopRepository->updateShop($shop);
+        } catch (\Throwable $e) {
+            return $this->createErrorResponse('shop_update_license_failed', $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function provided(WebhookAction $request): Response
+    {
+        $payload = $request->payload;
+
+        if (!isset($payload['licenseKey']) && !isset($payload['licenseHost'])) {
+            return $this->createErrorResponse('missing_license_credentials', 'No licenseKey and licenseHost provided', Response::HTTP_BAD_REQUEST);
+        }
+
+        $licenseKey = isset($payload['licenseKey']) && is_string($payload['licenseKey']) ? $payload['licenseKey'] : '';
+        $licenseHost = isset($payload['licenseHost']) && is_string($payload['licenseHost']) ? $payload['licenseHost'] : '';
+
+        /** @var Shop $shop */
+        $shop = $request->shop;
 
         if ($licenseKey !== '') {
             try {
