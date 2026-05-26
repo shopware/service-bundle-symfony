@@ -3,6 +3,7 @@
 namespace Shopware\ServiceBundle\Test\Controller;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\App\SDK\Context\ActionSource;
 use Shopware\App\SDK\Context\Webhook\WebhookAction;
@@ -295,6 +296,42 @@ class LicenseControllerTest extends TestCase
                 'detail' => 'Shop with id "my-shop-id-1" not found',
             ],
         ], $decodedContent);
+    }
+
+    /**
+     * @return iterable<string, array{array<string, mixed>}>
+     */
+    public static function nonStringPayloadProvider(): iterable
+    {
+        yield 'licenseHost is array' => [['licenseKey' => 'valid_key', 'licenseHost' => []]];
+        yield 'licenseHost is int' => [['licenseKey' => 'valid_key', 'licenseHost' => 42]];
+        yield 'licenseKey is array' => [['licenseKey' => [], 'licenseHost' => 'valid_host']];
+        yield 'licenseKey is bool' => [['licenseKey' => true, 'licenseHost' => 'valid_host']];
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    #[DataProvider('nonStringPayloadProvider')]
+    public function testProvidedReturns422OnNonStringPayloadFieldsAndDoesNotPersist(array $payload): void
+    {
+        $shop = new Shop('my-shop-id', 'https://shop.com', 'secret');
+        $shop->commercialLicenseKey = 'pre-existing-key';
+        $shop->commercialLicenseHost = 'pre-existing-host';
+
+        /** @var ShopRepositoryInterface<Shop>&MockObject $shopRepository */
+        $shopRepository = $this->createMock(ShopRepositoryInterface::class);
+        $shopRepository->expects($this->never())->method('updateShop');
+
+        $this->commercialLicense->expects($this->never())->method('validate');
+
+        $licenseController = new LicenseController($shopRepository, $this->commercialLicense);
+
+        $response = $licenseController->provided($this->buildWebhookAction($shop, $payload));
+
+        $this->assertSame(422, $response->getStatusCode());
+        $this->assertSame('pre-existing-key', $shop->commercialLicenseKey);
+        $this->assertSame('pre-existing-host', $shop->commercialLicenseHost);
     }
 
     public function testProvidedWithHostOnlyDoesNotValidateAndPersists(): void

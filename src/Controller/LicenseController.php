@@ -72,8 +72,16 @@ class LicenseController
             return $this->createErrorResponse('missing_license_credentials', 'No licenseKey and licenseHost provided', Response::HTTP_BAD_REQUEST);
         }
 
-        $licenseKey = isset($payload['licenseKey']) && is_string($payload['licenseKey']) ? $payload['licenseKey'] : '';
-        $licenseHost = isset($payload['licenseHost']) && is_string($payload['licenseHost']) ? $payload['licenseHost'] : '';
+        if (isset($payload['licenseKey']) && !is_string($payload['licenseKey'])) {
+            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if (isset($payload['licenseHost']) && !is_string($payload['licenseHost'])) {
+            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $licenseKey = $payload['licenseKey'] ?? '';
+        $licenseHost = $payload['licenseHost'] ?? '';
 
         /** @var Shop $shop */
         $shop = $request->shop;
