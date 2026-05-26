@@ -73,11 +73,11 @@ class LicenseController
         }
 
         if (array_key_exists('licenseKey', $payload) && !is_string($payload['licenseKey'])) {
-            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->createErrorResponse('invalid_license_payload', 'licenseKey must be a string', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         if (array_key_exists('licenseHost', $payload) && !is_string($payload['licenseHost'])) {
-            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->createErrorResponse('invalid_license_payload', 'licenseHost must be a string', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $licenseKey = $payload['licenseKey'] ?? '';

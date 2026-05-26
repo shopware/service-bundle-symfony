@@ -299,23 +299,23 @@ class LicenseControllerTest extends TestCase
     }
 
     /**
-     * @return iterable<string, array{array<string, mixed>}>
+     * @return iterable<string, array{array<string, mixed>, string}>
      */
     public static function nonStringPayloadProvider(): iterable
     {
-        yield 'licenseHost is array' => [['licenseKey' => 'valid_key', 'licenseHost' => []]];
-        yield 'licenseHost is int' => [['licenseKey' => 'valid_key', 'licenseHost' => 42]];
-        yield 'licenseHost is null' => [['licenseKey' => 'valid_key', 'licenseHost' => null]];
-        yield 'licenseKey is array' => [['licenseKey' => [], 'licenseHost' => 'valid_host']];
-        yield 'licenseKey is bool' => [['licenseKey' => true, 'licenseHost' => 'valid_host']];
-        yield 'licenseKey is null' => [['licenseKey' => null, 'licenseHost' => 'valid_host']];
+        yield 'licenseHost is array' => [['licenseKey' => 'valid_key', 'licenseHost' => []], 'licenseHost must be a string'];
+        yield 'licenseHost is int' => [['licenseKey' => 'valid_key', 'licenseHost' => 42], 'licenseHost must be a string'];
+        yield 'licenseHost is null' => [['licenseKey' => 'valid_key', 'licenseHost' => null], 'licenseHost must be a string'];
+        yield 'licenseKey is array' => [['licenseKey' => [], 'licenseHost' => 'valid_host'], 'licenseKey must be a string'];
+        yield 'licenseKey is bool' => [['licenseKey' => true, 'licenseHost' => 'valid_host'], 'licenseKey must be a string'];
+        yield 'licenseKey is null' => [['licenseKey' => null, 'licenseHost' => 'valid_host'], 'licenseKey must be a string'];
     }
 
     /**
      * @param array<string, mixed> $payload
      */
     #[DataProvider('nonStringPayloadProvider')]
-    public function testProvidedReturns422OnNonStringPayloadFieldsAndDoesNotPersist(array $payload): void
+    public function testProvidedReturns422OnNonStringPayloadFieldsAndDoesNotPersist(array $payload, string $expectedDetail): void
     {
         $shop = new Shop('my-shop-id', 'https://shop.com', 'secret');
         $shop->commercialLicenseKey = 'pre-existing-key';
@@ -331,7 +331,18 @@ class LicenseControllerTest extends TestCase
 
         $response = $licenseController->provided($this->buildWebhookAction($shop, $payload));
 
+        $content = $response->getContent();
+        $this->assertIsString($content);
+        $decodedContent = json_decode($content, true);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(422, $response->getStatusCode());
+        $this->assertSame([
+            'errors' => [
+                'type' => 'invalid_license_payload',
+                'detail' => $expectedDetail,
+            ],
+        ], $decodedContent);
         $this->assertSame('pre-existing-key', $shop->commercialLicenseKey);
         $this->assertSame('pre-existing-host', $shop->commercialLicenseHost);
     }
