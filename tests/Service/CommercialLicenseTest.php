@@ -7,13 +7,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\ServiceBundle\Exception\LicenseException;
 use Shopware\ServiceBundle\Service\CommercialLicense;
 use PHPUnit\Framework\TestCase;
-use Shopware\ServiceBundle\Service\EmptyKey;
 use Shopware\ServiceBundle\Service\LicenseInfo;
 
 #[CoversClass(CommercialLicense::class)]
-#[CoversClass(LicenseException::class)]
-#[CoversClass(EmptyKey::class)]
-#[CoversClass(LicenseInfo::class)]
 class CommercialLicenseTest extends TestCase
 {
     private const LICENSE_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiJ9.eyJhdWQiOiJsb2NhbGhvc3QiLCJzdWIiOiJ0ZXN0IiwiZXhwIjozMjUwMzY3NjQwMCwiaWF0IjoxNjU1ODgwOTgwLjg2MTcyNywibmJmIjoxNjU1ODgwOTgwLjg2MTczNCwibGljZW5zZS10b2dnbGVzIjp7IjAwMDAwMSI6dHJ1ZSwiMDAwMDAyIjpmYWxzZSwiMDAwMDAzIjp0cnVlfX0.MVCdyweIzi7PamGhliTMiH1Ipt6sT2TmbH4LK6u5iuaTSAE7_TDYe8YZvUClUcAk7XrtLjhNQ2l88cfzlm5w5j5_IqyOF0LWd2RybjBMU-PxCOCRirapL3QMc5rFdr1NV_AysLYENgQhyzLldE4HfnquSRLcOEFEAimGk8TKPKZJe-ET0cmEZG599tnW87rttZr2Zj8WKjGzXAxhGaCvL6a6UTgs15CjSZoL_uGbuAb4rDD1iumpd9vy3s3utrUa2-CG_by8e5uY57n_prWqMQk5Ug64xP7ZML2GeUzciWvUGo6cmu9CT4WY-kLAW4oO0ADiFWwADe91J2I9xaYiqdB-UGqTdFdfNa8rUUXVO8VHG6SRbNBflxBA8ycTryBjPwiIiOtx2L9hNZuDDQTjgmW15rf4P89lceO8WYqSfVDIjffwTWd7tfcUQ9I3hNnY92QmiCXkf-QU_hXb7weAOXsjcfqOt2aQsg_vk8DBwV7PBPKJ6ceESoHehiwN1hCmVMUQKLlury5BhTYt_ZXITDWro8IxP2UgvonaSXtcGWhJWV-QmsbIlaJPB4c5FyAcGK0BoDsDuDW-_XQwUNyY8VuZFRk5N88Hn_Lnzb2iO1MZR69W4g1W9854-pusnjXii3xrWsekAfRw0lQx5wRT-M2vmdzfuvjO-vwMUUKJl04';
@@ -25,6 +21,10 @@ class CommercialLicenseTest extends TestCase
         $this->mockCommercialLicense = $this->createMock(CommercialLicense::class);
     }
 
+    /**
+     * @uses \Shopware\ServiceBundle\Service\EmptyKey
+     * @uses \Shopware\ServiceBundle\Service\LicenseInfo
+     */
     public function testValidateWithValidLicenseKey(): void
     {
         $commercialLicense = new CommercialLicense();
@@ -47,6 +47,10 @@ class CommercialLicenseTest extends TestCase
         ], $info->toggles);
     }
 
+    /**
+     * @uses \Shopware\ServiceBundle\Service\EmptyKey
+     * @uses \Shopware\ServiceBundle\Exception\LicenseException
+     */
     public function testValidateWithInvalidLicenseKey(): void
     {
         $this->expectException(LicenseException::class);
@@ -57,6 +61,9 @@ class CommercialLicenseTest extends TestCase
         $commercialLicense->validate('invalid_license_key');
     }
 
+    /**
+     * @uses \Shopware\ServiceBundle\Exception\LicenseException
+     */
     public function testValidateNotProviderLicenseKey(): void
     {
         $commercialLicense = new CommercialLicense();
@@ -67,6 +74,9 @@ class CommercialLicenseTest extends TestCase
         $commercialLicense->validate('');
     }
 
+    /**
+     * @uses \Shopware\ServiceBundle\Service\LicenseInfo
+     */
     public function testLicenseInfoWithPlanRise(): void
     {
         $licenseInfo = new LicenseInfo(
@@ -90,6 +100,9 @@ class CommercialLicenseTest extends TestCase
         $this->assertSame('production', $result->planUsage);
     }
 
+    /**
+     * @uses \Shopware\ServiceBundle\Service\LicenseInfo
+     */
     public function testLicenseInfoWithPlanEvolve(): void
     {
         $licenseInfo = new LicenseInfo(
@@ -113,6 +126,9 @@ class CommercialLicenseTest extends TestCase
         $this->assertSame('production', $result->planUsage);
     }
 
+    /**
+     * @uses \Shopware\ServiceBundle\Service\LicenseInfo
+     */
     public function testLicenseInfoWithPlanBeyond(): void
     {
         $licenseInfo = new LicenseInfo(
