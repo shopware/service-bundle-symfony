@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "81722b695afd9cc1bfd2583f84fe92d5",
+    "content-hash": "d38bef1622a34883d3e111d0329971df",
     "packages": [
         {
             "name": "doctrine/cache",
@@ -2486,80 +2486,6 @@
             "time": "2024-04-18T09:32:20+00:00"
         },
         {
-            "name": "symfony/clock",
-            "version": "v7.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/clock.git",
-                "reference": "3dfc8b084853586de51dd1441c6242c76a28cbe7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/clock/zipball/3dfc8b084853586de51dd1441c6242c76a28cbe7",
-                "reference": "3dfc8b084853586de51dd1441c6242c76a28cbe7",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.2",
-                "psr/clock": "^1.0",
-                "symfony/polyfill-php83": "^1.28"
-            },
-            "provide": {
-                "psr/clock-implementation": "1.0"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "Resources/now.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Component\\Clock\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Decouples applications from the system clock",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "clock",
-                "psr20",
-                "time"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/clock/tree/v7.1.1"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2024-05-31T14:57:53+00:00"
-        },
-        {
             "name": "symfony/config",
             "version": "v7.1.1",
             "source": {
@@ -3859,92 +3785,6 @@
                 }
             ],
             "time": "2024-08-30T17:02:28+00:00"
-        },
-        {
-            "name": "symfony/messenger",
-            "version": "v7.1.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/messenger.git",
-                "reference": "e1dc743492ff9f1cfb23e6eea3592bf2ec9bd079"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/messenger/zipball/e1dc743492ff9f1cfb23e6eea3592bf2ec9bd079",
-                "reference": "e1dc743492ff9f1cfb23e6eea3592bf2ec9bd079",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.2",
-                "psr/log": "^1|^2|^3",
-                "symfony/clock": "^6.4|^7.0"
-            },
-            "conflict": {
-                "symfony/console": "<6.4",
-                "symfony/event-dispatcher": "<6.4",
-                "symfony/event-dispatcher-contracts": "<2.5",
-                "symfony/framework-bundle": "<6.4",
-                "symfony/http-kernel": "<6.4",
-                "symfony/serializer": "<6.4"
-            },
-            "require-dev": {
-                "psr/cache": "^1.0|^2.0|^3.0",
-                "symfony/console": "^6.4|^7.0",
-                "symfony/dependency-injection": "^6.4|^7.0",
-                "symfony/event-dispatcher": "^6.4|^7.0",
-                "symfony/http-kernel": "^6.4|^7.0",
-                "symfony/process": "^6.4|^7.0",
-                "symfony/property-access": "^6.4|^7.0",
-                "symfony/rate-limiter": "^6.4|^7.0",
-                "symfony/routing": "^6.4|^7.0",
-                "symfony/serializer": "^6.4|^7.0",
-                "symfony/service-contracts": "^2.5|^3",
-                "symfony/stopwatch": "^6.4|^7.0",
-                "symfony/validator": "^6.4|^7.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\Messenger\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Samuel Roze",
-                    "email": "samuel.roze@gmail.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Helps applications send and receive messages to/from other applications or via message queues",
-            "homepage": "https://symfony.com",
-            "support": {
-                "source": "https://github.com/symfony/messenger/tree/v7.1.4"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2024-08-06T14:26:51+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -8074,14 +7914,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.2",
-        "ext-simplexml": "*",
-        "ext-zip": "*"
+        "php": ">=8.2"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }

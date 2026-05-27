@@ -39,6 +39,10 @@ class LicenseController
         $licenseKey = $payload['licenseKey'] ?? '';
         $licenseHost = $payload['licenseHost'] ?? '';
 
+        if (!is_string($licenseKey) || !is_string($licenseHost)) {
+            return $this->createErrorResponse('invalid_license_credentials', 'licenseKey and licenseHost must be strings', Response::HTTP_BAD_REQUEST);
+        }
+
         if ($licenseKey !== '') {
             try {
                 $this->commercialLicense->validate($licenseKey);

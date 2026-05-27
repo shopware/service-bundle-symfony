@@ -3,6 +3,7 @@
 namespace Shopware\ServiceBundle\Test\Controller;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use Shopware\App\SDK\Shop\ShopRepositoryInterface;
 use Shopware\App\SDK\Test\MockShopRepository;
@@ -18,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 #[CoversClass(LicenseController::class)]
-#[CoversClass(LicenseException::class)]
+#[UsesClass(LicenseException::class)]
 class LicenseControllerTest extends TestCase
 {
     private CommercialLicense&MockObject $commercialLicense;
@@ -151,6 +152,35 @@ class LicenseControllerTest extends TestCase
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
         $this->assertEquals(json_encode($dataExpected), $response->getContent());
+    }
+
+    public function testSyncWithInvalidPayloadTypes(): void
+    {
+        $shop = new Shop('my-shop-id', 'https://shop.com', 'secret');
+
+        /** @var ShopRepositoryInterface<Shop> $shopRepository */
+        $shopRepository = new MockShopRepository();
+        $shopRepository->createShop($shop);
+
+        $request = $this->createMock(Request::class);
+        $request->method('getPayload')->willReturn(new InputBag(['licenseKey' => ['invalid']]));
+
+        $licenseController = new LicenseController($shopRepository, $this->commercialLicense);
+
+        $response = $licenseController->sync($shop, $request);
+        $content = $response->getContent();
+
+        $this->assertIsString($content, 'Response content is not a valid string');
+        $decodedContent = json_decode($content, true);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        $this->assertEquals([
+            'errors' => [
+                'type' => 'invalid_license_credentials',
+                'detail' => 'licenseKey and licenseHost must be strings',
+            ],
+        ], $decodedContent);
     }
 
     public function testSyncWithShopUpdateFailure(): void
