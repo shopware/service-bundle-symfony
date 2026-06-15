@@ -36,8 +36,8 @@ class LicenseController
             return $this->createErrorResponse('missing_license_credentials', 'No licenseKey and licenseHost provided', Response::HTTP_BAD_REQUEST);
         }
 
-        $licenseKey = $payload['licenseKey'] ?? '';
-        $licenseHost = $payload['licenseHost'] ?? '';
+        $licenseKey = is_string($payload['licenseKey'] ?? null) ? $payload['licenseKey'] : '';
+        $licenseHost = is_string($payload['licenseHost'] ?? null) ? $payload['licenseHost'] : '';
 
         if ($licenseKey !== '') {
             try {
