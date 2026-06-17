@@ -13,6 +13,8 @@ on:
 jobs:
   unit:
     runs-on: ubuntu-latest
+    env:
+      SYMFONY_DEPRECATIONS_HELPER: 'max[self]=0&max[direct]=0'
     strategy:
       fail-fast: false
       matrix:
