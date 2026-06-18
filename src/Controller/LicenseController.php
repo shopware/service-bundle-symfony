@@ -28,9 +28,8 @@ class LicenseController
     /**
      * @param Shop $shop
      *
-     * @deprecated tag:v6.8.0 - Replaced by the `commercial_license.provided` webhook handled by self::provided().
-     *                          The Shopware platform stops pushing to this endpoint once an app declares the
-     *                          new webhook in its manifest. See https://github.com/shopware/shopware/pull/16635.
+     * This endpoint is used until Shopware version < 6.7.11.
+     * Use the service/license/commercial/provided endpoint for Shopware version >= 6.7.11.
      */
     #[Route('/service/license/commercial/sync', name: 'service.sync.commercial-license-info', methods: ['POST'])]
     public function sync(ShopInterface $shop, Request $request): Response
