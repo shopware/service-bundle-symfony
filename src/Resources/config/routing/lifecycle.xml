@@ -22,4 +22,8 @@
     <route id="shopware_service_license_sync" path="/service/license/commercial/sync" methods="POST">
         <default key="_controller">\Shopware\ServiceBundle\Controller\LicenseController::sync</default>
     </route>
+
+    <route id="shopware_service_license_provided" path="/service/license/commercial/provided" methods="POST">
+        <default key="_controller">\Shopware\ServiceBundle\Controller\LicenseController::provided</default>
+    </route>
 </routes>
